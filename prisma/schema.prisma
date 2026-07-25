@@ -1,0 +1,399 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum FormStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum FormFieldType {
+  TEXT
+  TEXTAREA
+  EMAIL
+  PHONE
+  NUMBER
+  URL
+  PASSWORD
+
+  SELECT
+  MULTI_SELECT
+  RADIO
+  CHECKBOX
+
+  DATE
+  TIME
+  DATETIME
+
+  FILE
+  RATING
+
+  HEADING
+  PARAGRAPH
+  DIVIDER
+}
+
+enum FormCategory {
+  BUSINESS
+  CONTACT
+  FEEDBACK
+  EVENT
+  HR
+  EDUCATION
+  SALES
+  MARKETING
+  SUPPORT
+  SURVEY
+  REGISTRATION
+  OTHER
+}
+
+enum NotificationType {
+  FORM
+  RESPONSE
+  WORKSPACE
+  SYSTEM
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  PUBLISH
+  UNPUBLISH
+  ARCHIVE
+  RESTORE
+  INVITE
+  REMOVE
+}
+
+model User {
+  id            String            @id @default(cuid())
+  name          String?
+  email         String            @unique
+  emailVerified Boolean           @default(false)
+  image         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  createdForms  Form[]            @relation("CreatedForms")
+  updatedForms  Form[]            @relation("UpdatedForms")
+  sessions      Session[]
+  accounts      Account[]
+  workspaces    Workspace[]       @relation("WorkspaceOwner")
+  memberships   WorkspaceMember[]
+
+  notifications Notification[]
+  auditLogs     AuditLog[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+
+  ipAddress String?
+  userAgent String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id         String @id @default(cuid())
+  accountId  String
+  providerId String
+  userId     String
+
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+
+  scope    String?
+  idToken  String?
+  password String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([identifier, value])
+  @@map("verifications")
+}
+
+model Workspace {
+  id        String            @id @default(cuid())
+  name      String
+  slug      String            @unique
+  logo      String?
+  ownerId   String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  auditLogs AuditLog[]
+  owner     User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members   WorkspaceMember[]
+  forms     Form[]
+
+  @@index([ownerId])
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  id          String        @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole @default(MEMBER)
+  joinedAt    DateTime      @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([workspaceId])
+  @@index([userId])
+  @@map("workspace_members")
+}
+
+model Form {
+  id          String @id @default(cuid())
+  workspaceId String
+
+  title       String
+  description String?
+
+  status FormStatus @default(DRAFT)
+
+  slug String
+
+  theme    Json?
+  settings Json?
+
+  publishedAt DateTime?
+
+  createdById String
+  updatedById String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy User      @relation("CreatedForms", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy User      @relation("UpdatedForms", fields: [updatedById], references: [id], onDelete: Restrict)
+
+  fields      FormField[]
+  submissions FormSubmission[]
+  views       FormView[]
+
+  @@unique([workspaceId, slug])
+  @@index([workspaceId])
+  @@index([status])
+  @@index([createdById])
+  @@index([updatedById])
+  @@map("forms")
+}
+
+model FormField {
+  id     String @id @default(cuid())
+  formId String
+
+  type FormFieldType
+
+  label       String
+  placeholder String?
+
+  helpText String?
+
+  required Boolean @default(false)
+
+  position Int
+
+  settings Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  form    Form               @relation(fields: [formId], references: [id], onDelete: Cascade)
+  answers SubmissionAnswer[]
+
+  @@index([formId])
+  @@index([position])
+  @@map("form_fields")
+}
+
+model FormSubmission {
+  id     String @id @default(cuid())
+  formId String
+
+  submittedAt DateTime @default(now())
+
+  ipAddress String?
+  userAgent String?
+
+  country String?
+  city    String?
+
+  answers SubmissionAnswer[]
+  form    Form               @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+  @@index([submittedAt])
+  @@map("form_submissions")
+}
+
+model SubmissionAnswer {
+  id String @id @default(cuid())
+
+  submissionId String
+  fieldId      String
+
+  value Json
+
+  createdAt DateTime @default(now())
+
+  submission FormSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  field      FormField      @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@index([fieldId])
+  @@map("submission_answers")
+}
+
+model Template {
+  id String @id @default(cuid())
+
+  title       String
+  description String?
+
+  category FormCategory @default(OTHER)
+
+  thumbnail String?
+
+  schema Json
+
+  featured Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([featured])
+  @@map("templates")
+}
+
+model FormView {
+  id String @id @default(cuid())
+
+  formId String
+
+  viewedAt DateTime @default(now())
+
+  ipAddress String?
+  userAgent String?
+
+  browser String?
+  device  String?
+  os      String?
+
+  country String?
+  city    String?
+
+  referrer String?
+
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+
+  form Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+  @@index([viewedAt])
+  @@map("form_views")
+}
+
+model Notification {
+  id String @id @default(cuid())
+
+  userId String
+
+  type NotificationType
+
+  title   String
+  message String
+
+  read Boolean @default(false)
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  workspaceId String
+  userId      String
+
+  action AuditAction
+
+  entityType String
+  entityId   String
+
+  description String?
+
+  metadata Json?
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
