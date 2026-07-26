@@ -1,6 +1,16 @@
-import type {
-  FormFieldType,
-} from "@prisma/client";
+type FormFieldType =
+  | "TEXT"
+  | "TEXTAREA"
+  | "EMAIL"
+  | "PHONE"
+  | "NUMBER"
+  | "DATE"
+  | "SELECT"
+  | "RADIO"
+  | "CHECKBOX"
+  | "RATING"
+  | "FILE"
+  | "URL";
 
 
 
@@ -17,16 +27,6 @@ type FormFieldInput = {
   helpText: string | null;
 
   required: boolean;
-
-  settings?: unknown;
-
-  createdAt?: Date;
-
-  updatedAt?: Date;
-
-  formId?: string;
-
-  position?: number;
 
 };
 
