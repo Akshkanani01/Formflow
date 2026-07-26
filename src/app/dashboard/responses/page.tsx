@@ -22,7 +22,7 @@ import Link from "next/link";
 type ResponseForm = {
   id: string;
   title: string;
-  _count?: {
+  _count: {
     submissions: number;
   };
 };
