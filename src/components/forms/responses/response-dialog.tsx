@@ -853,9 +853,10 @@ export function ResponseDialog({
     fieldId: string;
     value: unknown;
     field?: {
-      id: string;
-      label: string;
-    } | null;
+  id: string;
+  label: string;
+  type: string;
+} | null;
   })=>(
 
 
@@ -900,7 +901,7 @@ export function ResponseDialog({
                                   >
 
                                     {
-                                      answer.field.label
+                                      answer.field?.label ?? "Unknown field"
                                     }
 
 
@@ -923,7 +924,7 @@ export function ResponseDialog({
                                   >
 
                                     {
-                                      answer.field.type
+                                      answer.field?.type ?? ""
                                     }
 
 
