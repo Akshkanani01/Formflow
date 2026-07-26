@@ -84,11 +84,34 @@ export default async function BuilderPage({
 
 
 
-  const initialFields =
-    formFields.map(
-      mapFormFieldToBuilder
-    );
+const initialFields =
+  formFields.map(
 
+    (field) =>
+
+      mapFormFieldToBuilder({
+
+        id:
+          field.id,
+
+        type:
+          String(field.type),
+
+        label:
+          field.label,
+
+        placeholder:
+          field.placeholder,
+
+        helpText:
+          field.helpText,
+
+        required:
+          field.required,
+
+      })
+
+  );
 
 
   return (
