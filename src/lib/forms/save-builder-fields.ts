@@ -1,35 +1,31 @@
-"use server";
-
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-
-import { mapFieldType } from "@/lib/forms/field-type-map";
-
-
-
-type TransactionClient =
-  Parameters<
-    Parameters<
-      typeof prisma.$transaction
-    >[0]
-  >[0];
+type FormFieldType =
+  | "TEXT"
+  | "TEXTAREA"
+  | "EMAIL"
+  | "PHONE"
+  | "NUMBER"
+  | "DATE"
+  | "SELECT"
+  | "RADIO"
+  | "CHECKBOX"
+  | "RATING"
+  | "FILE"
+  | "URL"
+  | "PASSWORD";
 
 
 
-type BuilderFieldInput = {
+type FormFieldInput = {
 
-  id?: string;
+  id: string;
 
-  type: string;
+  type: FormFieldType;
 
   label: string;
 
-  description?: string;
+  placeholder: string | null;
 
-  placeholder?: string;
+  helpText: string | null;
 
   required: boolean;
 
@@ -38,372 +34,155 @@ type BuilderFieldInput = {
 
 
 
-type SaveBuilderFieldsInput = {
 
-  formId: string;
 
-  fields: BuilderFieldInput[];
 
-};
+export function mapFormFieldToBuilder(
 
+  field: FormFieldInput
 
-
-
-
-
-
-export async function saveBuilderFields({
-
-  formId,
-
-  fields,
-
-}: SaveBuilderFieldsInput) {
-
-
-
-  const session =
-
-    await auth.api.getSession({
-
-      headers:
-        await headers(),
-
-    });
-
-
-
-
-
-  if (!session) {
-
-    redirect("/login");
-
-  }
-
-
-
-
-
-
-
-  const form =
-
-    await prisma.form.findFirst({
-
-      where: {
-
-        id: formId,
-
-        createdById:
-
-          session.user.id,
-
-      },
-
-
-      select: {
-
-        id: true,
-
-      },
-
-    });
-
-
-
-
-
-
-
-  if (!form) {
-
-    throw new Error(
-
-      "Form not found."
-
-    );
-
-  }
-
-
-
-
-
-
-
-
-
-  await prisma.$transaction(
-
-    async (
-
-      tx: TransactionClient
-
-    ) => {
-
-
-
-
-
-      const existingFields =
-
-        await tx.formField.findMany({
-
-          where: {
-
-            formId,
-
-          },
-
-
-          select: {
-
-            id: true,
-
-          },
-
-        });
-
-
-
-
-
-
-
-      const incomingIds =
-
-        fields
-
-          .map(
-
-            (field: BuilderFieldInput) =>
-
-              field.id
-
-          )
-
-          .filter(
-
-            (id): id is string =>
-
-              Boolean(id)
-
-          );
-
-
-
-
-
-
-
-      const deletedIds =
-
-        existingFields
-
-          .map(
-
-            (field: { id: string }) =>
-
-              field.id
-
-          )
-
-          .filter(
-
-            (id: string) =>
-
-              !incomingIds.includes(id)
-
-          );
-
-
-
-
-
-
-
-      if (
-
-        deletedIds.length > 0
-
-      ) {
-
-
-
-        await tx.formField.deleteMany({
-
-          where: {
-
-            id: {
-
-              in: deletedIds,
-
-            },
-
-          },
-
-        });
-
-
-      }
-
-
-
-
-
-
-
-
-
-      for (
-
-        const [
-
-          index,
-
-          field,
-
-        ]
-
-        of fields.entries()
-
-      ) {
-
-
-
-
-
-        const data = {
-
-
-
-          type:
-
-            mapFieldType(
-
-              field.type
-
-            ),
-
-
-
-          label:
-
-            field.label,
-
-
-
-          placeholder:
-
-            field.placeholder ||
-
-            null,
-
-
-
-          helpText:
-
-            field.description ||
-
-            null,
-
-
-
-          required:
-
-            field.required,
-
-
-
-          position:
-
-            index,
-
-
-
-        };
-
-
-
-
-
-
-
-
-
-        if (
-
-          typeof field.id === "string"
-
-        ) {
-
-
-
-          await tx.formField.update({
-
-            where: {
-
-              id:
-
-                field.id,
-
-            },
-
-
-            data,
-
-
-          });
-
-
-
-
-
-        } else {
-
-
-
-          await tx.formField.create({
-
-            data: {
-
-              formId,
-
-
-              ...data,
-
-
-            },
-
-          });
-
-
-        }
-
-
-
-      }
-
-
-
-    }
-
-  );
-
-
-
-
-
-
-
+) {
 
 
   return {
 
-    success: true,
+    id:
+
+      field.id,
+
+
+    type:
+
+      mapDatabaseType(
+
+        field.type
+
+      ),
+
+
+    label:
+
+      field.label,
+
+
+    description:
+
+      field.helpText ?? "",
+
+
+    placeholder:
+
+      field.placeholder ?? "",
+
+
+    required:
+
+      field.required,
+
 
   };
 
+}
+
+
+
+
+
+
+
+function mapDatabaseType(
+
+  type: FormFieldType
+
+) {
+
+
+  switch (type) {
+
+
+
+    case "TEXT":
+
+      return "short-text";
+
+
+
+    case "TEXTAREA":
+
+      return "paragraph";
+
+
+
+    case "EMAIL":
+
+      return "email";
+
+
+
+    case "PHONE":
+
+      return "phone";
+
+
+
+    case "NUMBER":
+
+      return "number";
+
+
+
+    case "DATE":
+
+      return "date";
+
+
+
+    case "SELECT":
+
+      return "dropdown";
+
+
+
+    case "RADIO":
+
+      return "radio";
+
+
+
+    case "CHECKBOX":
+
+      return "checkbox";
+
+
+
+    case "RATING":
+
+      return "rating";
+
+
+
+    case "FILE":
+
+      return "file";
+
+
+
+    case "URL":
+
+      return "url";
+
+
+
+    case "PASSWORD":
+
+      return "password";
+
+
+
+    default:
+
+      return "short-text";
+
+  }
 
 }
