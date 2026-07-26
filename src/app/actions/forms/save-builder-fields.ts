@@ -246,23 +246,23 @@ export async function saveBuilderFields({
 
       const deletedIds =
 
-        existingFields
+  existingFields
 
-          .map(
+    .map(
 
-            (field) =>
+      (field: { id: string }) =>
 
-              field.id
+        field.id
 
-          )
+    )
 
-          .filter(
+    .filter(
 
-            (id) =>
+      (id: string) =>
 
-              !incomingDbIds.includes(id)
+        !incomingDbIds.includes(id)
 
-          );
+    );
 
 
 
