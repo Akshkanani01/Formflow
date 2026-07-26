@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+
 import {
   PublishButton,
 } from "@/components/forms/preview/publish-button";
+
 import {
   ArrowLeft,
-  Rocket,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -35,106 +36,211 @@ type PreviewPageProps = {
 
 
 
+type PreviewField = {
+
+  id: string;
+
+  type: string;
+
+  label: string;
+
+  placeholder: string | null;
+
+  required: boolean;
+
+  settings: unknown;
+
+};
+
+
+
+
+
 export default async function PreviewPage({
+
   params,
+
 }: PreviewPageProps) {
 
 
+
   const session =
+
     await auth.api.getSession({
+
       headers: await headers(),
+
     });
 
 
 
+
+
   if (!session) {
+
     redirect("/login");
+
   }
+
+
+
 
 
 
 
   const workspace =
+
     await getOrCreateWorkspace({
+
       id: session.user.id,
+
       name: session.user.name,
+
       email: session.user.email,
+
     });
+
+
+
 
 
 
 
   const { id } =
+
     await params;
 
 
 
 
+
+
+
   const form =
+
     await getForm({
+
       workspaceId: workspace.id,
+
       formId: id,
+
     });
+
+
+
 
 
 
 
   if (!form) {
+
     notFound();
+
   }
 
 
 
 
-  const fields =
+
+
+
+  const fields: PreviewField[] =
+
     await prisma.formField.findMany({
 
       where: {
+
         formId: form.id,
+
       },
+
 
       orderBy: {
+
         position: "asc",
+
       },
 
+
     });
+
+
 
 
 
 
 
   const submitFields =
-    fields.map((field)=>({
 
-      id:
-        field.id,
+    fields.map(
 
-      type:
-        field.type,
+      (field: PreviewField) => ({
 
-      label:
-        field.label,
 
-      placeholder:
-        field.placeholder,
 
-      required:
-        field.required,
+        id:
 
-      settings:
-        field.settings &&
-        typeof field.settings === "object" &&
-        !Array.isArray(field.settings)
+          field.id,
 
-          ? field.settings as {
-              min?: number;
-              max?: number;
-              options?: string[];
-            }
 
-          : undefined,
 
-    }));
+        type:
+
+          field.type,
+
+
+
+        label:
+
+          field.label,
+
+
+
+        placeholder:
+
+          field.placeholder,
+
+
+
+        required:
+
+          field.required,
+
+
+
+        settings:
+
+          field.settings &&
+
+          typeof field.settings === "object" &&
+
+          !Array.isArray(field.settings)
+
+
+
+            ? field.settings as {
+
+                min?: number;
+
+                max?: number;
+
+                options?: string[];
+
+              }
+
+
+
+            : undefined,
+
+
+
+      })
+
+    );
+
+
+
+
 
 
 
@@ -143,18 +249,20 @@ export default async function PreviewPage({
   return (
 
     <main
+
       className="
         min-h-screen
         bg-muted/20
         px-6
         py-10
       "
+
     >
 
 
-      {/* Top Bar */}
 
       <div
+
         className="
           mx-auto
           mb-6
@@ -163,29 +271,39 @@ export default async function PreviewPage({
           items-center
           justify-between
         "
+
       >
 
 
+
         <Link
+
           href={`/dashboard/forms/${form.id}/builder`}
+
         >
 
           <Button
+
             variant="outline"
+
             size="sm"
+
           >
 
             <ArrowLeft
+
               className="
                 mr-2
                 h-4
                 w-4
               "
+
             />
 
             Back to Builder
 
           </Button>
+
 
         </Link>
 
@@ -193,10 +311,13 @@ export default async function PreviewPage({
 
 
 
-        <PublishButton
-  formId={form.id}
-/>
 
+
+        <PublishButton
+
+          formId={form.id}
+
+        />
 
 
       </div>
@@ -207,7 +328,10 @@ export default async function PreviewPage({
 
 
 
+
+
       <div
+
         className="
           mx-auto
           max-w-3xl
@@ -217,42 +341,54 @@ export default async function PreviewPage({
           p-8
           shadow-sm
         "
+
       >
 
 
 
-        {/* Header */}
-
         <div
+
           className="
             border-b
             pb-6
           "
+
         >
 
           <h1
+
             className="
               text-3xl
               font-bold
             "
+
           >
+
             {form.title}
+
           </h1>
+
+
 
 
 
           {form.description && (
 
             <p
+
               className="
                 mt-3
                 text-muted-foreground
               "
+
             >
+
               {form.description}
+
             </p>
 
           )}
+
 
         </div>
 
@@ -262,49 +398,71 @@ export default async function PreviewPage({
 
 
 
-        {/* Fields */}
+
 
         <div
+
           className="
             mt-8
             space-y-8
           "
+
         >
 
+
+
           {fields.map(
-            (field)=>(
+
+            (field: PreviewField) => (
+
 
               <div
+
                 key={field.id}
+
                 className="
                   space-y-3
                 "
+
               >
 
+
+
                 <label
+
                   className="
                     text-sm
                     font-semibold
                   "
+
                 >
 
                   {field.label}
 
 
+
                   {field.required && (
 
                     <span
+
                       className="
                         ml-1
                         text-destructive
                       "
+
                     >
+
                       *
+
                     </span>
 
                   )}
 
+
                 </label>
+
+
+
 
 
 
@@ -313,32 +471,57 @@ export default async function PreviewPage({
 
                   field={{
 
+
                     type:
+
                       field.type,
 
+
+
                     label:
+
                       field.label,
 
+
+
                     placeholder:
+
                       field.placeholder,
 
+
+
                     required:
+
                       field.required,
 
+
+
                     settings:
+
                       submitFields.find(
-                        (item)=>
+
+                        (item) =>
+
                           item.id === field.id
+
                       )?.settings,
+
+
 
                   }}
 
+
                 />
+
+
 
               </div>
 
+
             )
+
           )}
+
 
 
         </div>
@@ -348,33 +531,42 @@ export default async function PreviewPage({
 
 
 
-        {/* Submit */}
+
+
 
         <div
+
           className="
             mt-10
             border-t
             pt-6
           "
+
         >
+
+
 
           <FormSubmitButton
 
-            formId={
-              form.id
-            }
 
-            fields={
-              submitFields
-            }
+            formId={form.id}
+
+
+
+            fields={submitFields}
+
 
           />
+
 
         </div>
 
 
 
+
+
       </div>
+
 
 
     </main>
