@@ -72,12 +72,12 @@ export default async function BuilderPage({
   const formFields =
     await prisma.formField.findMany({
 
-      where: {
+      where:{
         formId: form.id,
       },
 
-      orderBy: {
-        position: "asc",
+      orderBy:{
+        position:"asc",
       },
 
     });
@@ -92,6 +92,7 @@ export default async function BuilderPage({
 
 
   return (
+
     <div
       className="
         flex
@@ -107,9 +108,12 @@ export default async function BuilderPage({
         initialFields={initialFields}
       >
 
+
         <BuilderHeader
           title={form.title}
+          formId={form.id}
         />
+
 
 
         <div
@@ -129,11 +133,15 @@ export default async function BuilderPage({
 
           <BuilderProperties />
 
+
         </div>
 
 
       </BuilderProvider>
 
+
     </div>
+
   );
+
 }

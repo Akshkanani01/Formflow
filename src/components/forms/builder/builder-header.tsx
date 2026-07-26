@@ -20,12 +20,14 @@ import {
 
 type BuilderHeaderProps = {
   title: string;
+  formId: string;
 };
 
 
 
 export function BuilderHeader({
   title,
+  formId,
 }: BuilderHeaderProps) {
 
 
@@ -39,7 +41,6 @@ export function BuilderHeader({
 
 
   return (
-
     <header
       className="
         flex
@@ -52,7 +53,6 @@ export function BuilderHeader({
         px-6
       "
     >
-
 
       {/* Left */}
 
@@ -73,20 +73,15 @@ export function BuilderHeader({
             items-center
             justify-center
             rounded-lg
-            transition
             hover:bg-muted
           "
         >
 
           <ArrowLeft
-            className="
-              h-4
-              w-4
-            "
+            className="h-4 w-4"
           />
 
         </Link>
-
 
 
 
@@ -98,9 +93,7 @@ export function BuilderHeader({
               font-semibold
             "
           >
-
             {title}
-
           </h1>
 
 
@@ -137,7 +130,7 @@ export function BuilderHeader({
 
 
 
-      {/* Right */}
+      {/* Actions */}
 
       <div
         className="
@@ -148,60 +141,32 @@ export function BuilderHeader({
       >
 
 
-        {/* Undo */}
-
         <Button
-
           type="button"
-
           variant="ghost"
-
           size="icon"
-
-          disabled={
-            !canUndo
-          }
-
+          disabled={!canUndo}
           onClick={undo}
-
         >
 
           <Undo2
-            className="
-              h-4
-              w-4
-            "
+            className="h-4 w-4"
           />
 
         </Button>
 
 
 
-
-
-        {/* Redo */}
-
         <Button
-
           type="button"
-
           variant="ghost"
-
           size="icon"
-
-          disabled={
-            !canRedo
-          }
-
+          disabled={!canRedo}
           onClick={redo}
-
         >
 
           <Redo2
-            className="
-              h-4
-              w-4
-            "
+            className="h-4 w-4"
           />
 
         </Button>
@@ -209,43 +174,36 @@ export function BuilderHeader({
 
 
 
-
-        {/* Preview */}
-
-        <Button
-
-          type="button"
-
-          variant="outline"
-
-          size="sm"
-
+        <Link
+          href={`/dashboard/forms/${formId}/preview`}
         >
 
-          <Eye
-            className="
-              mr-2
-              h-4
-              w-4
-            "
-          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+          >
 
-          Preview
+            <Eye
+              className="
+                mr-2
+                h-4
+                w-4
+              "
+            />
 
-        </Button>
+            Preview
+
+          </Button>
+
+        </Link>
 
 
 
-
-
-        {/* Publish */}
 
         <Button
-
           type="button"
-
           size="sm"
-
         >
 
           <Rocket
@@ -265,6 +223,5 @@ export function BuilderHeader({
 
 
     </header>
-
   );
 }

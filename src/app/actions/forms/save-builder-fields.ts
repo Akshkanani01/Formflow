@@ -10,6 +10,7 @@ import { mapFieldType } from "@/lib/forms/field-type-map";
 
 
 type BuilderFieldInput = {
+
   id?: string;
 
   type: string;
@@ -23,6 +24,7 @@ type BuilderFieldInput = {
   required: boolean;
 
   settings?: {
+
     options?: string[];
 
     min?: number;
@@ -32,110 +34,180 @@ type BuilderFieldInput = {
     maxSize?: number;
 
     allowedTypes?: string[];
+
   };
+
 };
+
 
 
 type SaveBuilderFieldsInput = {
+
   formId: string;
 
   fields: BuilderFieldInput[];
+
 };
+
 
 
 
 export async function saveBuilderFields({
+
   formId,
+
   fields,
+
 }: SaveBuilderFieldsInput) {
+
 
 
   const session =
     await auth.api.getSession({
+
       headers: await headers(),
+
     });
 
 
 
   if (!session) {
+
     redirect("/login");
+
   }
+
 
 
 
   const form =
     await prisma.form.findFirst({
+
       where: {
+
         id: formId,
 
         workspace: {
+
           members: {
+
             some: {
+
               userId:
                 session.user.id,
+
             },
+
           },
+
         },
+
       },
 
+
       select: {
+
         id: true,
+
         workspaceId: true,
+
       },
+
     });
 
 
 
+
+
   if (!form) {
+
     throw new Error(
       "Form not found."
     );
+
   }
 
 
 
 
+
+
   await prisma.$transaction(
+
     async (tx) => {
+
 
 
       const existingFields =
         await tx.formField.findMany({
+
           where: {
+
             formId,
+
           },
 
+
           select: {
+
             id: true,
+
           },
+
         });
 
 
 
 
-      const incomingIds =
+
+
+      const existingIds =
+        new Set(
+
+          existingFields.map(
+            (field) =>
+              field.id
+          )
+
+        );
+
+
+
+
+
+      const incomingDbIds =
         fields
+
           .map(
             (field) =>
               field.id
           )
+
           .filter(
-            Boolean
+            (id) =>
+              id &&
+              existingIds.has(id)
           ) as string[];
+
+
 
 
 
 
       const deletedIds =
         existingFields
+
           .map(
             (field) =>
               field.id
           )
+
           .filter(
             (id) =>
-              !incomingIds.includes(id)
+              !incomingDbIds.includes(id)
           );
+
+
 
 
 
@@ -144,15 +216,25 @@ export async function saveBuilderFields({
         deletedIds.length > 0
       ) {
 
+
         await tx.formField.deleteMany({
+
           where: {
+
             id: {
+
               in: deletedIds,
+
             },
+
           },
+
         });
 
+
       }
+
+
 
 
 
@@ -163,118 +245,189 @@ export async function saveBuilderFields({
           index,
           field,
         ]
+
         of fields.entries()
+
       ) {
+
 
 
         const data = {
 
-  type:
-    mapFieldType(
-      field.type
-    ),
 
-  label:
-    field.label,
-
-  placeholder:
-    field.placeholder || null,
-
-  helpText:
-    field.description || null,
-
-  required:
-    field.required,
-
-  position:
-    index,
-
-  settings:
-    field.settings ?? {},
-
-};
+          type:
+            mapFieldType(
+              field.type
+            ),
 
 
 
+          label:
+            field.label,
 
+
+
+          placeholder:
+            field.placeholder || null,
+
+
+
+          helpText:
+            field.description || null,
+
+
+
+          required:
+            field.required,
+
+
+
+          position:
+            index,
+
+
+
+          settings:
+            field.settings ?? {},
+
+
+        };
+
+
+
+
+
+
+
+        /*
+          Existing database field
+          update only
+        */
 
         if (
+
           field.id &&
-          incomingIds.includes(field.id)
+
+          existingIds.has(
+            field.id
+          )
+
         ) {
+
 
 
           await tx.formField.update({
 
             where: {
-              id: field.id,
+
+              id:
+                field.id,
+
             },
 
 
             data,
 
+
           });
+
 
 
 
         } else {
 
 
+
+          /*
+            New frontend field
+            create database record
+          */
+
+
           await tx.formField.create({
 
             data: {
 
+
               formId,
 
+
               ...data,
+
 
             },
 
           });
 
+
         }
 
+
       }
+
+
+
+
+
+
 
 
       await tx.auditLog.create({
 
         data: {
 
+
           workspaceId:
             form.workspaceId,
+
 
 
           userId:
             session.user.id,
 
 
+
           action:
             "UPDATE",
+
 
 
           entityType:
             "FORM",
 
 
+
           entityId:
             form.id,
 
 
+
           description:
             "Updated form builder fields",
+
 
         },
 
       });
 
 
+
+
+
     }
+
   );
 
 
 
+
+
+
   return {
-    success: true,
+
+    success:true,
+
   };
+
+
 }

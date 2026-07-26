@@ -10,29 +10,29 @@ import {
 
 const actions = [
   {
-    title: "Blank Form",
-    description: "Start from scratch",
-    icon: Plus,
-    href: "/dashboard/forms/new",
-    featured: true,
-  },
+  title: "New Form",
+  description: "Create a new form from scratch",
+  icon: Plus,
+  href: "/dashboard/forms",
+  featured: true,
+},
   {
     title: "Contact Form",
     description: "Collect customer enquiries",
     icon: MessageSquare,
-    href: "/dashboard/templates/contact",
+    href: "/dashboard/templates",
   },
   {
     title: "Feedback Form",
     description: "Gather valuable feedback",
     icon: ClipboardList,
-    href: "/dashboard/templates/feedback",
+    href: "/dashboard/templates",
   },
   {
     title: "Registration",
     description: "Event & user registrations",
     icon: UserPlus,
-    href: "/dashboard/templates/registration",
+    href: "/dashboard/templates",
   },
 ];
 
