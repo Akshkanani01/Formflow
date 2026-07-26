@@ -1,25 +1,8 @@
-type FormFieldType =
-  | "TEXT"
-  | "TEXTAREA"
-  | "EMAIL"
-  | "PHONE"
-  | "NUMBER"
-  | "DATE"
-  | "SELECT"
-  | "RADIO"
-  | "CHECKBOX"
-  | "RATING"
-  | "FILE"
-  | "URL"
-  | "PASSWORD";
-
-
-
 type FormFieldInput = {
 
   id: string;
 
-  type: FormFieldType;
+  type: string;
 
   label: string;
 
@@ -92,7 +75,7 @@ export function mapFormFieldToBuilder(
 
 function mapDatabaseType(
 
-  type: FormFieldType
+  type: string
 
 ) {
 
