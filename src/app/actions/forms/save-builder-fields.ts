@@ -65,6 +65,8 @@ type SaveBuilderFieldsInput = {
 
 
 
+
+
 export async function saveBuilderFields({
 
   formId,
@@ -146,7 +148,9 @@ export async function saveBuilderFields({
   if (!form) {
 
     throw new Error(
+
       "Form not found."
+
     );
 
   }
@@ -161,11 +165,7 @@ export async function saveBuilderFields({
 
   await prisma.$transaction(
 
-    async (
-
-      tx: TransactionClient
-
-    ) => {
+    async (tx: TransactionClient) => {
 
 
 
@@ -201,11 +201,11 @@ export async function saveBuilderFields({
 
           existingFields.map(
 
-  (field: { id: string }) =>
+            (field) =>
 
-    field.id
+              field.id
 
-)
+          )
 
         );
 
@@ -249,21 +249,21 @@ export async function saveBuilderFields({
 
         existingFields
 
-  .map(
+          .map(
 
-    (field: { id: string }) =>
+            (field) =>
 
-      field.id
+              field.id
 
-  )
+          )
 
           .filter(
 
-  (id: string) =>
+            (id) =>
 
-    !incomingDbIds.includes(id)
+              !incomingDbIds.includes(id)
 
-);
+          );
 
 
 
@@ -334,13 +334,9 @@ export async function saveBuilderFields({
 
 
 
-
-
           label:
 
             field.label,
-
-
 
 
 
@@ -350,13 +346,9 @@ export async function saveBuilderFields({
 
 
 
-
-
           helpText:
 
             field.description || null,
-
-
 
 
 
@@ -366,13 +358,9 @@ export async function saveBuilderFields({
 
 
 
-
-
           position:
 
             index,
-
-
 
 
 
@@ -381,9 +369,8 @@ export async function saveBuilderFields({
             field.settings ?? {},
 
 
+
         };
-
-
 
 
 
@@ -403,19 +390,13 @@ export async function saveBuilderFields({
 
 
 
-          const fieldId = field.id;
-
-
-
-
-
           await tx.formField.update({
 
             where: {
 
               id:
 
-                fieldId,
+                field.id,
 
             },
 
@@ -451,7 +432,6 @@ export async function saveBuilderFields({
         }
 
 
-
       }
 
 
@@ -465,6 +445,8 @@ export async function saveBuilderFields({
       await tx.auditLog.create({
 
         data: {
+
+
 
           workspaceId:
 
@@ -501,6 +483,7 @@ export async function saveBuilderFields({
             "Updated form builder fields",
 
 
+
         },
 
 
@@ -509,9 +492,12 @@ export async function saveBuilderFields({
 
 
 
+
     }
 
   );
+
+
 
 
 

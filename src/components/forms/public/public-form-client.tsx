@@ -14,12 +14,27 @@ import {
 } from "@/components/ui/button";
 
 import {
-  publicSubmit,
-} from "@/app/actions/forms/public-submit";
-
-import {
   PublicFieldRenderer,
 } from "./public-field-renderer";
+
+async function publicSubmit({
+  formId,
+  answers,
+}: {
+  formId: string;
+  answers: {
+    fieldId: string;
+    value: unknown;
+  }[];
+}) {
+  await fetch(`/api/forms/${formId}/submit`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ answers }),
+  });
+}
 
 
 

@@ -1,59 +1,83 @@
-const FormFieldType = {
-  TEXT: "TEXT",
-  TEXTAREA: "TEXTAREA",
-  EMAIL: "EMAIL",
-  PHONE: "PHONE",
-  NUMBER: "NUMBER",
-  DATE: "DATE",
-  SELECT: "SELECT",
-  RADIO: "RADIO",
-  CHECKBOX: "CHECKBOX",
-  RATING: "RATING",
-  FILE: "FILE",
-} as const;
+import type {
+  FormFieldType,
+} from "@prisma/client";
 
 
-type FormFieldType =
-  (typeof FormFieldType)[keyof typeof FormFieldType];
+
+type FormFieldInput = {
+
+  id: string;
+
+  type: FormFieldType;
+
+  label: string;
+
+  placeholder: string | null;
+
+  helpText: string | null;
+
+  required: boolean;
+
+  settings?: unknown;
+
+  createdAt?: Date;
+
+  updatedAt?: Date;
+
+  formId?: string;
+
+  position?: number;
+
+};
+
+
+
+
 
 
 
 export function mapFormFieldToBuilder(
-  field: {
 
-    id: string;
+  field: FormFieldInput
 
-    type: FormFieldType;
-
-    label: string;
-
-    placeholder: string | null;
-
-    helpText: string | null;
-
-    required: boolean;
-
-  }
 ) {
+
 
   return {
 
-    id: field.id,
+    id:
 
-    type: mapDatabaseType(
-      field.type
-    ),
+      field.id,
 
-    label: field.label,
+
+    type:
+
+      mapDatabaseType(
+
+        field.type
+
+      ),
+
+
+    label:
+
+      field.label,
+
 
     description:
+
       field.helpText ?? "",
 
+
     placeholder:
+
       field.placeholder ?? "",
 
+
     required:
+
       field.required,
+
 
   };
 
@@ -63,58 +87,93 @@ export function mapFormFieldToBuilder(
 
 
 
+
+
 function mapDatabaseType(
+
   type: FormFieldType
+
 ) {
 
-  switch(type) {
+
+  switch (type) {
 
 
-    case FormFieldType.TEXT:
+
+    case "TEXT":
+
       return "short-text";
 
 
-    case FormFieldType.TEXTAREA:
+
+    case "TEXTAREA":
+
       return "paragraph";
 
 
-    case FormFieldType.EMAIL:
+
+    case "EMAIL":
+
       return "email";
 
 
-    case FormFieldType.PHONE:
+
+    case "PHONE":
+
       return "phone";
 
 
-    case FormFieldType.NUMBER:
+
+    case "NUMBER":
+
       return "number";
 
 
-    case FormFieldType.SELECT:
-      return "dropdown";
 
+    case "DATE":
 
-    case FormFieldType.RADIO:
-      return "radio";
-
-
-    case FormFieldType.CHECKBOX:
-      return "checkbox";
-
-
-    case FormFieldType.DATE:
       return "date";
 
 
-    case FormFieldType.RATING:
+
+    case "SELECT":
+
+      return "dropdown";
+
+
+
+    case "RADIO":
+
+      return "radio";
+
+
+
+    case "CHECKBOX":
+
+      return "checkbox";
+
+
+
+    case "RATING":
+
       return "rating";
 
 
-    case FormFieldType.FILE:
+
+    case "FILE":
+
       return "file";
 
 
+
+    case "URL":
+
+      return "url";
+
+
+
     default:
+
       return "short-text";
 
   }

@@ -1,32 +1,24 @@
-"use server";
-
-import { prisma } from "@/lib/prisma";
-
-
-
-type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | {
-      [key: string]: JsonValue;
-    };
+import {
+  FormFieldType,
+} from "@prisma/client";
 
 
 
-type PublicSubmitInput = {
+type FormFieldInput = {
 
-  formId: string;
+  id: string;
 
-  answers: {
+  type: FormFieldType;
 
-    fieldId: string;
+  label: string;
 
-    value: unknown;
+  placeholder: string | null;
 
-  }[];
+  helpText: string | null;
+
+  required: boolean;
+
+  settings?: unknown;
 
 };
 
@@ -34,77 +26,50 @@ type PublicSubmitInput = {
 
 
 
+export function mapFormFieldToBuilder(
+
+  field: FormFieldInput
+
+) {
 
 
-function normalizeAnswerValue(
-  value: unknown
-): JsonValue {
+  return {
+
+    id:
+
+      field.id,
 
 
+    type:
 
-  if (value instanceof File) {
+      mapDatabaseType(
 
-    return {
+        field.type
 
-      fileName:
-        value.name,
-
-      size:
-        value.size,
-
-      type:
-        value.type,
-
-    };
-
-  }
+      ),
 
 
+    label:
+
+      field.label,
 
 
+    description:
+
+      field.helpText ?? "",
 
 
-  if (
-    Array.isArray(value)
-  ) {
+    placeholder:
 
-    return value.map(
-
-      (item) =>
-
-        normalizeAnswerValue(item)
-
-    );
-
-  }
+      field.placeholder ?? "",
 
 
+    required:
+
+      field.required,
 
 
-
-
-
-  if (
-    value !== null
-    &&
-    typeof value === "object"
-  ) {
-
-    return JSON.parse(
-
-      JSON.stringify(value)
-
-    ) as JsonValue;
-
-  }
-
-
-
-
-
-
-
-  return value as JsonValue;
+  };
 
 }
 
@@ -114,233 +79,94 @@ function normalizeAnswerValue(
 
 
 
+function mapDatabaseType(
+
+  type: FormFieldType
+
+) {
 
 
-export async function publicSubmit({
-
-  formId,
-
-  answers,
-
-}: PublicSubmitInput) {
-
-
-
-
-  const form =
-
-    await prisma.form.findFirst({
-
-      where: {
-
-        id: formId,
-
-        status:
-          "PUBLISHED",
-
-      },
-
-
-      select: {
-
-        id: true,
-
-        title: true,
-
-        workspaceId: true,
-
-        createdById: true,
-
-      },
-
-
-    });
+  switch(type) {
 
 
 
+    case FormFieldType.TEXT:
+
+      return "short-text";
 
 
 
+    case FormFieldType.TEXTAREA:
 
-  if (!form) {
+      return "paragraph";
 
-    throw new Error(
-      "Published form not found."
-    );
+
+
+    case FormFieldType.EMAIL:
+
+      return "email";
+
+
+
+    case FormFieldType.PHONE:
+
+      return "phone";
+
+
+
+    case FormFieldType.NUMBER:
+
+      return "number";
+
+
+
+    case FormFieldType.SELECT:
+
+      return "dropdown";
+
+
+
+    case FormFieldType.RADIO:
+
+      return "radio";
+
+
+
+    case FormFieldType.CHECKBOX:
+
+      return "checkbox";
+
+
+
+    case FormFieldType.DATE:
+
+      return "date";
+
+
+
+    case FormFieldType.RATING:
+
+      return "rating";
+
+
+
+    case FormFieldType.FILE:
+
+      return "file";
+
+
+
+    case FormFieldType.URL:
+
+      return "url";
+
+
+
+    default:
+
+      return "short-text";
+
 
   }
-
-
-
-
-
-
-
-
-  const submission =
-
-    await prisma.formSubmission.create({
-
-      data: {
-
-
-        formId:
-          form.id,
-
-
-
-        answers: {
-
-          create:
-
-            answers.map(
-
-              (answer) => ({
-
-                field: {
-
-                  connect: {
-
-                    id:
-                      answer.fieldId,
-
-                  },
-
-                },
-
-
-                value:
-
-                  normalizeAnswerValue(
-                    answer.value
-                  ),
-
-
-              })
-
-            ),
-
-
-        },
-
-
-      },
-
-    });
-
-
-
-
-
-
-
-
-
-  await prisma.notification.create({
-
-    data: {
-
-
-      userId:
-        form.createdById,
-
-
-
-      type:
-        "RESPONSE",
-
-
-
-      title:
-        "New response received",
-
-
-
-      message:
-        `New response for ${form.title}`,
-
-
-
-      metadata: {
-
-        formId:
-          form.id,
-
-
-        submissionId:
-          submission.id,
-
-
-      },
-
-
-    },
-
-  });
-
-
-
-
-
-
-
-
-
-  await prisma.auditLog.create({
-
-    data: {
-
-
-      workspaceId:
-        form.workspaceId,
-
-
-
-      userId:
-        form.createdById,
-
-
-
-      action:
-        "CREATE",
-
-
-
-      entityType:
-        "FORM_SUBMISSION",
-
-
-
-      entityId:
-        submission.id,
-
-
-
-      description:
-        "New public form submission received",
-
-
-    },
-
-  });
-
-
-
-
-
-
-
-
-  return {
-
-    success: true,
-
-
-    submissionId:
-      submission.id,
-
-
-  };
-
 
 }
