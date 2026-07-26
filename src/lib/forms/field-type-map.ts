@@ -1,4 +1,21 @@
-import { FormFieldType } from "@prisma/client";
+const FormFieldType = {
+  TEXT: "TEXT",
+  TEXTAREA: "TEXTAREA",
+  EMAIL: "EMAIL",
+  PHONE: "PHONE",
+  NUMBER: "NUMBER",
+  DATE: "DATE",
+  SELECT: "SELECT",
+  RADIO: "RADIO",
+  CHECKBOX: "CHECKBOX",
+  RATING: "RATING",
+  FILE: "FILE",
+} as const;
+
+
+type FormFieldType =
+  (typeof FormFieldType)[keyof typeof FormFieldType];
+
 
 
 export function mapFieldType(
@@ -53,5 +70,7 @@ export function mapFieldType(
 
     default:
       return FormFieldType.TEXT;
+
   }
+
 }

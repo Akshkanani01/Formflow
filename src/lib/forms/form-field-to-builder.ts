@@ -1,10 +1,26 @@
-import {
-  FormFieldType,
-} from "@prisma/client";
+const FormFieldType = {
+  TEXT: "TEXT",
+  TEXTAREA: "TEXTAREA",
+  EMAIL: "EMAIL",
+  PHONE: "PHONE",
+  NUMBER: "NUMBER",
+  DATE: "DATE",
+  SELECT: "SELECT",
+  RADIO: "RADIO",
+  CHECKBOX: "CHECKBOX",
+  RATING: "RATING",
+  FILE: "FILE",
+} as const;
+
+
+type FormFieldType =
+  (typeof FormFieldType)[keyof typeof FormFieldType];
+
 
 
 export function mapFormFieldToBuilder(
   field: {
+
     id: string;
 
     type: FormFieldType;
@@ -16,10 +32,12 @@ export function mapFormFieldToBuilder(
     helpText: string | null;
 
     required: boolean;
+
   }
 ) {
 
   return {
+
     id: field.id,
 
     type: mapDatabaseType(
@@ -36,9 +54,12 @@ export function mapFormFieldToBuilder(
 
     required:
       field.required,
+
   };
 
 }
+
+
 
 
 
@@ -47,6 +68,7 @@ function mapDatabaseType(
 ) {
 
   switch(type) {
+
 
     case FormFieldType.TEXT:
       return "short-text";

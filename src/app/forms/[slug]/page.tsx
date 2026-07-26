@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
 
-import { FormStatus } from "@prisma/client";
-
 import { prisma } from "@/lib/prisma";
 
 import {
@@ -9,8 +7,25 @@ import {
 } from "@/components/forms/public/public-form-client";
 
 
-
+type PublicFormField = {
+  id: string;
+  type: string;
+  label: string;
+  placeholder: string | null;
+  required: boolean;
+  settings: unknown;
+};
 export const dynamic = "force-dynamic";
+
+
+
+const FormStatus = {
+
+  PUBLISHED: "PUBLISHED",
+
+} as const;
+
+
 
 
 
@@ -18,7 +33,7 @@ type PublicFormPageProps = {
 
   params: Promise<{
 
-    slug:string;
+    slug: string;
 
   }>;
 
@@ -28,42 +43,52 @@ type PublicFormPageProps = {
 
 
 
+
+
 export default async function PublicFormPage({
 
   params,
 
-}:PublicFormPageProps){
+}: PublicFormPageProps) {
 
 
 
   const {
+
     slug,
+
   } = await params;
 
 
 
 
 
+
+
   const form =
+
     await prisma.form.findFirst({
 
-      where:{
+      where: {
 
         slug,
 
         status:
+
           FormStatus.PUBLISHED,
 
       },
 
 
-      include:{
 
-        fields:{
+      include: {
 
-          orderBy:{
+        fields: {
+
+          orderBy: {
 
             position:
+
               "asc",
 
           },
@@ -78,7 +103,9 @@ export default async function PublicFormPage({
 
 
 
-  if(!form){
+
+
+  if (!form) {
 
     notFound();
 
@@ -88,66 +115,99 @@ export default async function PublicFormPage({
 
 
 
+
+
+
+
   return (
 
     <main
+
       className="
         min-h-screen
         bg-muted/20
         px-6
         py-10
       "
+
     >
+
+
 
       <PublicFormClient
 
         form={{
 
+
+
           id:
+
             form.id,
 
 
+
           title:
+
             form.title,
 
 
+
           description:
+
             form.description,
 
 
 
+
+
           fields:
+  form.fields.map(
 
-            form.fields.map(
+    (field: PublicFormField) => ({
 
-              (field)=>({
+
 
                 id:
+
                   field.id,
 
 
+
                 type:
+
                   field.type,
 
 
+
                 label:
+
                   field.label,
 
 
+
                 placeholder:
+
                   field.placeholder,
 
 
+
                 required:
+
                   field.required,
+
+
 
 
 
                 settings:
 
                   field.settings &&
+
                   typeof field.settings === "object" &&
+
                   !Array.isArray(field.settings)
+
+
 
                     ? field.settings as {
 
@@ -161,7 +221,10 @@ export default async function PublicFormPage({
 
                       }
 
+
+
                     : undefined,
+
 
 
               })
@@ -169,9 +232,13 @@ export default async function PublicFormPage({
             ),
 
 
+
         }}
 
+
+
       />
+
 
 
     </main>
