@@ -197,18 +197,17 @@ export async function saveBuilderFields({
 
       const existingIds =
 
-        new Set<string>(
+  new Set<string>(
 
-          existingFields.map(
+    existingFields.map(
 
-            (field) =>
+      (field: { id: string }) =>
 
-              field.id
+        field.id
 
-          )
+    )
 
-        );
-
+  );
 
 
 
