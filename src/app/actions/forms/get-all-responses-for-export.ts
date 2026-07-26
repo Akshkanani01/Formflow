@@ -1,6 +1,5 @@
 "use server";
 
-
 import {
   prisma,
 } from "@/lib/prisma";
@@ -11,9 +10,48 @@ import {
 
 type GetAllResponsesInput = {
 
-  formId:string;
+  formId: string;
 
 };
+
+
+
+
+
+type SubmissionAnswer = {
+
+  fieldId: string;
+
+  value: unknown;
+
+};
+
+
+
+
+
+type SubmissionWithAnswers = {
+
+  submittedAt: Date;
+
+  answers: SubmissionAnswer[];
+
+};
+
+
+
+
+
+type FormField = {
+
+  id: string;
+
+  label: string;
+
+};
+
+
+
 
 
 
@@ -24,35 +62,37 @@ export async function getAllResponsesForExport({
 
   formId,
 
-}:GetAllResponsesInput){
+}: GetAllResponsesInput) {
 
 
 
-  const submissions =
+  const submissions: SubmissionWithAnswers[] =
 
     await prisma.formSubmission.findMany({
 
-      where:{
+      where: {
 
         formId,
 
       },
 
 
-      orderBy:{
+      orderBy: {
 
-        submittedAt:"desc",
+        submittedAt: "desc",
 
       },
 
 
-      include:{
+      include: {
 
-        answers:{
+        answers: {
 
-          include:{
+          select: {
 
-            field:true,
+            fieldId: true,
+
+            value: true,
 
           },
 
@@ -69,34 +109,35 @@ export async function getAllResponsesForExport({
 
 
 
-  const fields =
+  const fields: FormField[] =
 
-  await prisma.formField.findMany({
+    await prisma.formField.findMany({
 
-    where:{
+      where: {
 
-      formId,
+        formId,
 
-    },
-
-
-    orderBy:{
-
-      createdAt:"asc",
-
-    },
+      },
 
 
-    select:{
+      orderBy: {
 
-      id:true,
+        createdAt: "asc",
 
-      label:true,
-
-    },
+      },
 
 
-  });
+      select: {
+
+        id: true,
+
+        label: true,
+
+      },
+
+
+    });
+
 
 
 
@@ -107,146 +148,145 @@ export async function getAllResponsesForExport({
 
   return submissions.map(
 
-    (submission)=>(
+    (submission) => ({
 
+      submittedAt:
 
+        new Intl.DateTimeFormat(
 
-      {
+          "en-IN",
 
-        submittedAt:
+          {
 
-          new Intl.DateTimeFormat(
+            day: "2-digit",
 
-            "en-IN",
+            month: "short",
 
-            {
+            year: "numeric",
 
-              day:"2-digit",
+            hour: "2-digit",
 
-              month:"short",
+            minute: "2-digit",
 
-              year:"numeric",
+            hour12: true,
 
-              hour:"2-digit",
+          }
 
-              minute:"2-digit",
+        ).format(
 
-              hour12:true,
+          submission.submittedAt
 
-            }
+        ),
 
-          ).format(
 
-            submission.submittedAt
 
-          ),
 
 
+      fields:
 
+        fields.map(
 
+          (field: FormField) =>
 
-        fields:
+            field.label
 
-          fields.map(
+        ),
 
-            (field)=>
 
-              field.label
 
-          ),
 
 
+      values:
 
+        fields.map(
 
+          (field: FormField) => {
 
-        values:
 
-          fields.map(
 
-            (field)=>{
+            const answer =
 
+              submission.answers.find(
 
-              const answer =
+                (item) =>
 
-                submission.answers.find(
-
-                  (item)=>
-
-                    item.fieldId === field.id
-
-                );
-
-
-
-
-
-              if(!answer){
-
-                return "";
-
-              }
-
-
-
-
-
-
-              if(
-
-                typeof answer.value === "object"
-
-                &&
-
-                answer.value !== null
-
-                &&
-
-                "fileName" in answer.value
-
-              ){
-
-                const file =
-
-                  answer.value as {
-
-                    fileName?:string;
-
-                    url?:string;
-
-                  };
-
-
-
-                return (
-
-                  `${file.fileName ?? ""} ${file.url ?? ""}`
-
-                );
-
-              }
-
-
-
-
-
-
-              return String(
-
-                answer.value ?? ""
+                  item.fieldId === field.id
 
               );
 
 
+
+
+
+            if (!answer) {
+
+              return "";
+
             }
 
-          ),
-
-
-      }
 
 
 
-    )
+
+
+
+            if (
+
+              typeof answer.value === "object"
+
+              &&
+
+              answer.value !== null
+
+              &&
+
+              "fileName" in answer.value
+
+            ) {
+
+
+
+              const file =
+
+                answer.value as {
+
+                  fileName?: string;
+
+                  url?: string;
+
+                };
+
+
+
+
+
+              return (
+
+                `${file.fileName ?? ""} ${file.url ?? ""}`
+
+              );
+
+            }
+
+
+
+
+
+
+
+            return String(
+
+              answer.value ?? ""
+
+            );
+
+
+          }
+
+        ),
+
+
+    })
 
   );
 
