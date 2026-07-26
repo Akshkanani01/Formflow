@@ -25,9 +25,8 @@ export default function DashboardShell({
 
           <div className="min-w-0 space-y-6">
             <DashboardTopbar
-              notificationCount={notificationCount}
-              user={user}
-            />
+  user={user}
+/>
 
             <div className="space-y-6">
               {children}
