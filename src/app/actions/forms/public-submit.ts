@@ -1,7 +1,18 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+
+
+
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | {
+      [key: string]: JsonValue;
+    };
 
 
 
@@ -23,9 +34,12 @@ type PublicSubmitInput = {
 
 
 
+
+
 function normalizeAnswerValue(
   value: unknown
-): Prisma.InputJsonValue | Prisma.JsonNullValueInput {
+): JsonValue {
+
 
 
   if (value instanceof File) {
@@ -47,16 +61,24 @@ function normalizeAnswerValue(
 
 
 
+
+
+
   if (
     Array.isArray(value)
   ) {
 
     return value.map(
-      (item)=>
+
+      (item) =>
+
         normalizeAnswerValue(item)
-    ) as Prisma.InputJsonValue;
+
+    );
 
   }
+
+
 
 
 
@@ -69,8 +91,10 @@ function normalizeAnswerValue(
   ) {
 
     return JSON.parse(
+
       JSON.stringify(value)
-    ) as Prisma.InputJsonValue;
+
+    ) as JsonValue;
 
   }
 
@@ -78,20 +102,13 @@ function normalizeAnswerValue(
 
 
 
-  if (
-    value === null
-  ) {
-
-    return Prisma.JsonNull;
-
-  }
 
 
-
-
-  return value as Prisma.InputJsonValue;
+  return value as JsonValue;
 
 }
+
+
 
 
 
@@ -111,6 +128,7 @@ export async function publicSubmit({
 
 
   const form =
+
     await prisma.form.findFirst({
 
       where: {
@@ -125,15 +143,16 @@ export async function publicSubmit({
 
       select: {
 
-        id:true,
+        id: true,
 
-        title:true,
+        title: true,
 
-        workspaceId:true,
+        workspaceId: true,
 
-        createdById:true,
+        createdById: true,
 
       },
+
 
     });
 
@@ -143,7 +162,7 @@ export async function publicSubmit({
 
 
 
-  if(!form){
+  if (!form) {
 
     throw new Error(
       "Published form not found."
@@ -162,7 +181,7 @@ export async function publicSubmit({
 
     await prisma.formSubmission.create({
 
-      data:{
+      data: {
 
 
         formId:
@@ -170,17 +189,17 @@ export async function publicSubmit({
 
 
 
-        answers:{
+        answers: {
 
           create:
 
             answers.map(
 
-              (answer)=>({
+              (answer) => ({
 
-                field:{
+                field: {
 
-                  connect:{
+                  connect: {
 
                     id:
                       answer.fieldId,
@@ -219,7 +238,7 @@ export async function publicSubmit({
 
   await prisma.notification.create({
 
-    data:{
+    data: {
 
 
       userId:
@@ -242,7 +261,7 @@ export async function publicSubmit({
 
 
 
-      metadata:{
+      metadata: {
 
         formId:
           form.id,
@@ -250,6 +269,7 @@ export async function publicSubmit({
 
         submissionId:
           submission.id,
+
 
       },
 
@@ -268,7 +288,7 @@ export async function publicSubmit({
 
   await prisma.auditLog.create({
 
-    data:{
+    data: {
 
 
       workspaceId:
@@ -310,13 +330,15 @@ export async function publicSubmit({
 
 
 
+
   return {
 
-    success:true,
+    success: true,
 
 
     submissionId:
       submission.id,
+
 
   };
 

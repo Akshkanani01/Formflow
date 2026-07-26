@@ -9,6 +9,16 @@ import { prisma } from "@/lib/prisma";
 import { mapFieldType } from "@/lib/forms/field-type-map";
 
 
+
+type TransactionClient =
+  Parameters<
+    Parameters<
+      typeof prisma.$transaction
+    >[0]
+  >[0];
+
+
+
 type BuilderFieldInput = {
 
   id?: string;
@@ -52,6 +62,9 @@ type SaveBuilderFieldsInput = {
 
 
 
+
+
+
 export async function saveBuilderFields({
 
   formId,
@@ -63,11 +76,15 @@ export async function saveBuilderFields({
 
 
   const session =
+
     await auth.api.getSession({
 
-      headers: await headers(),
+      headers:
+        await headers(),
 
     });
+
+
 
 
 
@@ -80,7 +97,11 @@ export async function saveBuilderFields({
 
 
 
+
+
+
   const form =
+
     await prisma.form.findFirst({
 
       where: {
@@ -113,7 +134,10 @@ export async function saveBuilderFields({
 
       },
 
+
     });
+
+
 
 
 
@@ -132,13 +156,21 @@ export async function saveBuilderFields({
 
 
 
+
+
+
   await prisma.$transaction(
 
-    async (tx) => {
+    async (
+
+      tx: TransactionClient
+
+    ) => {
 
 
 
       const existingFields =
+
         await tx.formField.findMany({
 
           where: {
@@ -154,6 +186,7 @@ export async function saveBuilderFields({
 
           },
 
+
         });
 
 
@@ -161,13 +194,18 @@ export async function saveBuilderFields({
 
 
 
+
       const existingIds =
-        new Set(
+
+        new Set<string>(
 
           existingFields.map(
-            (field) =>
-              field.id
-          )
+
+  (field: { id: string }) =>
+
+    field.id
+
+)
 
         );
 
@@ -175,36 +213,30 @@ export async function saveBuilderFields({
 
 
 
+
+
       const incomingDbIds =
+
         fields
 
           .map(
+
             (field) =>
+
               field.id
+
           )
 
           .filter(
-            (id) =>
-              id &&
+
+            (id): id is string =>
+
+              typeof id === "string"
+
+              &&
+
               existingIds.has(id)
-          ) as string[];
 
-
-
-
-
-
-      const deletedIds =
-        existingFields
-
-          .map(
-            (field) =>
-              field.id
-          )
-
-          .filter(
-            (id) =>
-              !incomingDbIds.includes(id)
           );
 
 
@@ -212,9 +244,39 @@ export async function saveBuilderFields({
 
 
 
+
+      const deletedIds =
+
+        existingFields
+
+  .map(
+
+    (field: { id: string }) =>
+
+      field.id
+
+  )
+
+          .filter(
+
+  (id: string) =>
+
+    !incomingDbIds.includes(id)
+
+);
+
+
+
+
+
+
+
       if (
+
         deletedIds.length > 0
+
       ) {
+
 
 
         await tx.formField.deleteMany({
@@ -240,10 +302,16 @@ export async function saveBuilderFields({
 
 
 
+
+
       for (
+
         const [
+
           index,
+
           field,
+
         ]
 
         of fields.entries()
@@ -255,39 +323,61 @@ export async function saveBuilderFields({
         const data = {
 
 
+
           type:
+
             mapFieldType(
+
               field.type
+
             ),
 
 
 
+
+
           label:
+
             field.label,
 
 
 
+
+
           placeholder:
+
             field.placeholder || null,
 
 
 
+
+
           helpText:
+
             field.description || null,
 
 
 
+
+
           required:
+
             field.required,
 
 
 
+
+
           position:
+
             index,
 
 
 
+
+
           settings:
+
             field.settings ?? {},
 
 
@@ -299,20 +389,23 @@ export async function saveBuilderFields({
 
 
 
-        /*
-          Existing database field
-          update only
-        */
+
 
         if (
 
-          field.id &&
+          typeof field.id === "string"
 
-          existingIds.has(
-            field.id
-          )
+          &&
+
+          existingIds.has(field.id)
 
         ) {
+
+
+
+          const fieldId = field.id;
+
+
 
 
 
@@ -321,7 +414,8 @@ export async function saveBuilderFields({
             where: {
 
               id:
-                field.id,
+
+                fieldId,
 
             },
 
@@ -334,20 +428,14 @@ export async function saveBuilderFields({
 
 
 
+
         } else {
 
-
-
-          /*
-            New frontend field
-            create database record
-          */
 
 
           await tx.formField.create({
 
             data: {
-
 
               formId,
 
@@ -363,7 +451,9 @@ export async function saveBuilderFields({
         }
 
 
+
       }
+
 
 
 
@@ -376,40 +466,45 @@ export async function saveBuilderFields({
 
         data: {
 
-
           workspaceId:
+
             form.workspaceId,
 
 
 
           userId:
+
             session.user.id,
 
 
 
           action:
+
             "UPDATE",
 
 
 
           entityType:
+
             "FORM",
 
 
 
           entityId:
+
             form.id,
 
 
 
           description:
+
             "Updated form builder fields",
 
 
         },
 
-      });
 
+      });
 
 
 
@@ -423,9 +518,10 @@ export async function saveBuilderFields({
 
 
 
+
   return {
 
-    success:true,
+    success: true,
 
   };
 

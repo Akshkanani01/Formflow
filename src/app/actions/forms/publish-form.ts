@@ -3,19 +3,30 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import {
-  AuditAction,
-  FormStatus,
-} from "@prisma/client";
-
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+
+
+
+const FormStatus = {
+  PUBLISHED: "PUBLISHED",
+} as const;
+
+
+
+const AuditAction = {
+  PUBLISH: "PUBLISH",
+} as const;
+
+
 
 
 
 type PublishFormInput = {
   formId: string;
 };
+
+
 
 
 
@@ -28,6 +39,8 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 
 }
+
+
 
 
 
@@ -51,6 +64,8 @@ async function generateUniqueSlug(
 
 
 
+
+
   while (
 
     await prisma.form.findFirst({
@@ -71,9 +86,10 @@ async function generateUniqueSlug(
 
       select: {
 
-        id:true,
+        id: true,
 
       },
+
 
     })
 
@@ -99,6 +115,10 @@ async function generateUniqueSlug(
 
 
 
+
+
+
+
 export async function publishForm({
 
   formId,
@@ -108,12 +128,15 @@ export async function publishForm({
 
 
   const session =
+
     await auth.api.getSession({
 
       headers:
         await headers(),
 
     });
+
+
 
 
 
@@ -129,7 +152,10 @@ export async function publishForm({
 
 
 
+
+
   const form =
+
     await prisma.form.findFirst({
 
       where: {
@@ -157,17 +183,19 @@ export async function publishForm({
 
       select: {
 
-        id:true,
+        id: true,
 
-        title:true,
+        title: true,
 
-        slug:true,
+        slug: true,
 
-        workspaceId:true,
+        workspaceId: true,
 
       },
 
+
     });
+
 
 
 
@@ -188,6 +216,7 @@ export async function publishForm({
 
 
 
+
   let finalSlug =
     form.slug;
 
@@ -199,9 +228,13 @@ export async function publishForm({
 
 
     finalSlug =
+
       await generateUniqueSlug(
+
         form.title,
+
         form.id
+
       );
 
 
@@ -211,7 +244,11 @@ export async function publishForm({
 
 
 
+
+
+
   const updatedForm =
+
     await prisma.form.update({
 
       where: {
@@ -240,17 +277,20 @@ export async function publishForm({
 
       select: {
 
-        id:true,
+        id: true,
 
-        slug:true,
+        slug: true,
 
-        status:true,
+        status: true,
 
-        publishedAt:true,
+        publishedAt: true,
 
       },
 
+
     });
+
+
 
 
 
@@ -295,9 +335,11 @@ export async function publishForm({
 
 
 
+
+
   return {
 
-    success:true,
+    success: true,
 
 
     publicUrl:
