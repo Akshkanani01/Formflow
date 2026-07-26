@@ -9,7 +9,18 @@ import { prisma } from "@/lib/prisma";
 import { mapFieldType } from "@/lib/forms/field-type-map";
 
 
+
+type TransactionClient =
+  Parameters<
+    Parameters<
+      typeof prisma.$transaction
+    >[0]
+  >[0];
+
+
+
 type BuilderFieldInput = {
+
   id?: string;
 
   type: string;
@@ -25,163 +36,332 @@ type BuilderFieldInput = {
 };
 
 
+
+
 type SaveBuilderFieldsInput = {
+
   formId: string;
 
   fields: BuilderFieldInput[];
+
 };
 
 
+
+
+
+
+
 export async function saveBuilderFields({
+
   formId,
+
   fields,
+
 }: SaveBuilderFieldsInput) {
 
 
+
   const session =
+
     await auth.api.getSession({
-      headers: await headers(),
+
+      headers:
+        await headers(),
+
     });
 
 
+
+
+
   if (!session) {
+
     redirect("/login");
+
   }
+
+
+
+
 
 
 
   const form =
+
     await prisma.form.findFirst({
+
       where: {
+
         id: formId,
 
         createdById:
+
           session.user.id,
+
       },
 
+
       select: {
+
         id: true,
+
       },
+
     });
 
 
 
+
+
+
+
   if (!form) {
+
     throw new Error(
+
       "Form not found."
+
     );
+
   }
 
 
 
+
+
+
+
+
+
   await prisma.$transaction(
-    async (tx) => {
+
+    async (
+
+      tx: TransactionClient
+
+    ) => {
+
+
+
 
 
       const existingFields =
+
         await tx.formField.findMany({
+
           where: {
+
             formId,
+
           },
 
+
           select: {
+
             id: true,
+
           },
+
         });
+
+
+
+
 
 
 
       const incomingIds =
+
         fields
+
           .map(
-            (field) =>
+
+            (field: BuilderFieldInput) =>
+
               field.id
+
           )
+
           .filter(
-            Boolean
-          ) as string[];
 
+            (id): id is string =>
 
+              Boolean(id)
 
-      const deletedIds =
-        existingFields
-          .map(
-            (field) =>
-              field.id
-          )
-          .filter(
-            (id) =>
-              !incomingIds.includes(id)
           );
 
 
 
-      if (deletedIds.length > 0) {
+
+
+
+
+      const deletedIds =
+
+        existingFields
+
+          .map(
+
+            (field: { id: string }) =>
+
+              field.id
+
+          )
+
+          .filter(
+
+            (id: string) =>
+
+              !incomingIds.includes(id)
+
+          );
+
+
+
+
+
+
+
+      if (
+
+        deletedIds.length > 0
+
+      ) {
+
+
 
         await tx.formField.deleteMany({
+
           where: {
+
             id: {
+
               in: deletedIds,
+
             },
+
           },
+
         });
+
 
       }
 
 
 
 
+
+
+
+
+
       for (
+
         const [
+
           index,
+
           field,
+
         ]
+
         of fields.entries()
+
       ) {
+
+
+
 
 
         const data = {
 
+
+
           type:
+
             mapFieldType(
+
               field.type
+
             ),
 
+
+
           label:
+
             field.label,
 
+
+
           placeholder:
+
             field.placeholder ||
+
             null,
+
+
 
           helpText:
+
             field.description ||
+
             null,
 
+
+
           required:
+
             field.required,
 
+
+
           position:
+
             index,
+
+
 
         };
 
 
 
-        if (field.id) {
+
+
+
+
+
+
+        if (
+
+          typeof field.id === "string"
+
+        ) {
+
 
 
           await tx.formField.update({
+
             where: {
-              id: field.id,
+
+              id:
+
+                field.id,
+
             },
 
+
             data,
+
 
           });
 
 
+
+
+
         } else {
+
 
 
           await tx.formField.create({
@@ -190,22 +370,40 @@ export async function saveBuilderFields({
 
               formId,
 
+
               ...data,
+
 
             },
 
           });
 
+
         }
+
+
 
       }
 
+
+
     }
+
   );
 
 
+
+
+
+
+
+
+
   return {
+
     success: true,
+
   };
+
 
 }
