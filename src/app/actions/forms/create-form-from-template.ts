@@ -8,32 +8,21 @@ import {
   redirect,
 } from "next/navigation";
 
-
-import {
-  AuditAction,
-  FormStatus,
-} from "@prisma/client";
-
-
 import {
   auth,
 } from "@/lib/auth";
-
 
 import {
   prisma,
 } from "@/lib/prisma";
 
-
 import {
   getOrCreateWorkspace,
 } from "@/lib/workspace/get-or-create-workspace";
 
-
 import {
   formTemplates,
 } from "@/lib/forms/templates/templates";
-
 
 import {
   mapFieldType,
@@ -41,12 +30,31 @@ import {
 
 
 
+type TransactionClient =
+  Parameters<
+    Parameters<
+      typeof prisma.$transaction
+    >[0]
+  >[0];
+
+
+
+const FormStatus = {
+  DRAFT: "DRAFT",
+} as const;
+
+
+
+const AuditAction = {
+  CREATE: "CREATE",
+} as const;
+
+
+
 
 
 type CreateFormFromTemplateInput = {
-
-  templateId:string;
-
+  templateId: string;
 };
 
 
@@ -56,15 +64,12 @@ type CreateFormFromTemplateInput = {
 
 
 export async function createFormFromTemplate({
-
   templateId,
-
-}:CreateFormFromTemplateInput){
+}: CreateFormFromTemplateInput) {
 
 
 
   const session =
-
     await auth.api.getSession({
 
       headers:
@@ -76,7 +81,7 @@ export async function createFormFromTemplate({
 
 
 
-  if(!session){
+  if (!session) {
 
     redirect("/login");
 
@@ -87,9 +92,7 @@ export async function createFormFromTemplate({
 
 
 
-
   const workspace =
-
     await getOrCreateWorkspace({
 
       id:
@@ -110,11 +113,9 @@ export async function createFormFromTemplate({
 
 
   const template =
-
     formTemplates.find(
 
-      (item)=>
-
+      (item) =>
         item.id === templateId
 
     );
@@ -124,8 +125,7 @@ export async function createFormFromTemplate({
 
 
 
-
-  if(!template){
+  if (!template) {
 
     throw new Error(
       "Template not found."
@@ -141,30 +141,33 @@ export async function createFormFromTemplate({
 
 
   const form =
-
     await prisma.$transaction(
 
-      async(tx)=>{
+      async (
+        tx: TransactionClient
+      ) => {
 
 
 
         const createdForm =
-
           await tx.form.create({
 
-            data:{
+            data: {
 
 
               workspaceId:
                 workspace.id,
 
 
+
               title:
                 template.title,
 
 
+
               description:
                 template.description,
+
 
 
               slug:
@@ -181,12 +184,12 @@ export async function createFormFromTemplate({
                 session.user.id,
 
 
+
               updatedById:
                 session.user.id,
 
 
             },
-
 
           });
 
@@ -204,7 +207,8 @@ export async function createFormFromTemplate({
 
             template.fields.map(
 
-              (field,index)=>({
+              (field, index) => ({
+
 
 
                 formId:
@@ -248,10 +252,10 @@ export async function createFormFromTemplate({
                   field.settings ?? {},
 
 
+
               })
 
             ),
-
 
         });
 
@@ -265,27 +269,32 @@ export async function createFormFromTemplate({
 
         await tx.auditLog.create({
 
-          data:{
+          data: {
 
 
             workspaceId:
               workspace.id,
 
 
+
             userId:
               session.user.id,
+
 
 
             action:
               AuditAction.CREATE,
 
 
+
             entityType:
               "FORM",
 
 
+
             entityId:
               createdForm.id,
+
 
 
             description:
@@ -294,9 +303,7 @@ export async function createFormFromTemplate({
 
           },
 
-
         });
-
 
 
 
@@ -320,7 +327,7 @@ export async function createFormFromTemplate({
 
   return {
 
-    success:true,
+    success: true,
 
     formId:
       form.id,
