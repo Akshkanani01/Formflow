@@ -1,36 +1,25 @@
 "use server";
 
-
 import {
   prisma,
 } from "@/lib/prisma";
 
 
 
-
-
-export async function getAnalytics(){
-
+export async function getAnalytics() {
 
 
   const totalForms =
-
     await prisma.form.count();
 
 
 
 
-
-
-
   const publishedForms =
-
     await prisma.form.count({
 
-      where:{
-
-        status:"PUBLISHED",
-
+      where: {
+        status: "PUBLISHED",
       },
 
     });
@@ -38,21 +27,13 @@ export async function getAnalytics(){
 
 
 
-
-
-
   const totalResponses =
-
     await prisma.formSubmission.count();
 
 
 
 
-
-
-
   const totalViews =
-
     await prisma.formView.count();
 
 
@@ -60,18 +41,12 @@ export async function getAnalytics(){
 
 
 
-
-
   const thirtyDaysAgo =
-
     new Date();
 
 
-
   thirtyDaysAgo.setDate(
-
     thirtyDaysAgo.getDate() - 30
-
   );
 
 
@@ -79,41 +54,34 @@ export async function getAnalytics(){
 
 
 
-
-
   const recentSubmissions =
-
     await prisma.formSubmission.findMany({
 
-      where:{
+      where: {
 
-        submittedAt:{
+        submittedAt: {
 
-          gte:
-            thirtyDaysAgo,
+          gte: thirtyDaysAgo,
 
         },
 
       },
 
 
-      select:{
+      select: {
 
-        submittedAt:true,
-
-      },
-
-
-      orderBy:{
-
-        submittedAt:"asc",
+        submittedAt: true,
 
       },
 
+
+      orderBy: {
+
+        submittedAt: "asc",
+
+      },
 
     });
-
-
 
 
 
@@ -122,54 +90,45 @@ export async function getAnalytics(){
 
 
   const responseTrend =
-
     Array.from(
 
       {
-
-        length:30,
-
+        length: 30,
       },
 
-      (_,index)=>{
+      (_, index) => {
 
 
         const date =
-
           new Date();
 
 
 
         date.setDate(
-
-          date.getDate() - (29-index)
-
+          date.getDate() - (29 - index)
         );
 
 
 
-
         const key =
-
-          date.toISOString()
-
-          .split("T")[0];
+          date
+            .toISOString()
+            .split("T")[0];
 
 
 
 
 
         const count =
-
           recentSubmissions.filter(
 
-            (item)=>
+            (item: {
+              submittedAt: Date;
+            }) =>
 
               item.submittedAt
-
-              .toISOString()
-
-              .split("T")[0] === key
+                .toISOString()
+                .split("T")[0] === key
 
           ).length;
 
@@ -177,11 +136,12 @@ export async function getAnalytics(){
 
 
 
+
         return {
 
-          date:key,
+          date: key,
 
-          responses:count,
+          responses: count,
 
         };
 
@@ -197,22 +157,21 @@ export async function getAnalytics(){
 
 
 
-
   const forms =
-
     await prisma.form.findMany({
 
-      select:{
+      select: {
 
-        id:true,
+        id: true,
 
-        title:true,
+        title: true,
 
       },
 
-      orderBy:{
 
-        createdAt:"desc",
+      orderBy: {
+
+        createdAt: "desc",
 
       },
 
@@ -227,22 +186,22 @@ export async function getAnalytics(){
 
 
   const formPerformance =
+  await Promise.all(
 
-    await Promise.all(
+    forms.map(
 
-      forms.map(
-
-        async(form)=>{
+      async (form: {
+        id: string;
+        title: string;
+      }) => {
 
 
           const responses =
-
             await prisma.formSubmission.count({
 
-              where:{
+              where: {
 
-                formId:
-                  form.id,
+                formId: form.id,
 
               },
 
@@ -254,13 +213,11 @@ export async function getAnalytics(){
 
 
           const views =
-
             await prisma.formView.count({
 
-              where:{
+              where: {
 
-                formId:
-                  form.id,
+                formId: form.id,
 
               },
 
@@ -271,18 +228,15 @@ export async function getAnalytics(){
 
 
 
+
+
           return {
 
-            id:
-              form.id,
+            id: form.id,
 
-
-            title:
-              form.title,
-
+            title: form.title,
 
             views,
-
 
             responses,
 
@@ -291,27 +245,19 @@ export async function getAnalytics(){
 
               views
 
-              ?
+                ? Math.round(
 
-              Math.round(
+                    (
 
-                (
+                      responses /
 
-                  responses /
+                      views
 
-                  views
+                    ) * 100
 
-                )
+                  )
 
-                *
-
-                100
-
-              )
-
-              :
-
-              0,
+                : 0,
 
 
           };
@@ -330,28 +276,24 @@ export async function getAnalytics(){
 
 
 
-
   const topForms =
-
     [...formPerformance]
 
-    .sort(
+      .sort(
 
-      (a,b)=>
+        (a, b) =>
 
-        b.responses - a.responses
+          b.responses - a.responses
 
-    )
+      )
 
-    .slice(
+      .slice(
 
-      0,
+        0,
 
-      5
+        5
 
-    );
-
-
+      );
 
 
 
@@ -361,8 +303,7 @@ export async function getAnalytics(){
 
   return {
 
-
-    stats:{
+    stats: {
 
       totalForms,
 
@@ -375,17 +316,13 @@ export async function getAnalytics(){
     },
 
 
-
     responseTrend,
-
 
 
     topForms,
 
 
-
     formPerformance,
-
 
   };
 
