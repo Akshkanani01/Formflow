@@ -19,7 +19,13 @@ import {
 import Link from "next/link";
 
 
-
+type ResponseForm = {
+  id: string;
+  title: string;
+  _count?: {
+    submissions: number;
+  };
+};
 
 
 export default async function ResponsesPage(){
@@ -196,7 +202,8 @@ export default async function ResponsesPage(){
         {
           forms.map(
 
-            (form)=>(
+  (form: ResponseForm)=>(
+
 
 
               <Link
