@@ -1,22 +1,32 @@
 "use server";
 
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 
-type CreateSubmissionInput = {
 
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | {
+      [key: string]: JsonValue;
+    };
+
+
+
+type CreateSubmissionInput = {
   formId: string;
 
   answers: {
-
     fieldId: string;
-
-    value: Prisma.InputJsonValue;
-
+    value: JsonValue;
   }[];
-
 };
+
+
+
 
 
 
@@ -69,6 +79,8 @@ export async function createSubmission({
 
 
 
+
+
   const submission =
     await prisma.formSubmission.create({
 
@@ -82,6 +94,7 @@ export async function createSubmission({
           create:
 
             answers.map(
+
               (answer) => ({
 
                 field: {
@@ -101,6 +114,7 @@ export async function createSubmission({
 
 
               })
+
             ),
 
 
@@ -110,6 +124,8 @@ export async function createSubmission({
       },
 
     });
+
+
 
 
 
@@ -160,6 +176,8 @@ export async function createSubmission({
 
 
 
+
+
   await prisma.auditLog.create({
 
     data: {
@@ -199,6 +217,7 @@ export async function createSubmission({
 
 
 
+
   return {
 
     success: true,
@@ -207,6 +226,5 @@ export async function createSubmission({
       submission.id,
 
   };
-
 
 }
