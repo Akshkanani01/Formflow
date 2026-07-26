@@ -1,8 +1,17 @@
 "use server";
 
-import { Prisma } from "@prisma/client";
-
 import { prisma } from "@/lib/prisma";
+
+
+
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | JsonValue[]
+  | {
+      [key: string]: JsonValue;
+    };
 
 
 
@@ -30,13 +39,13 @@ function normalizeJsonValue(
 
   value: unknown
 
-): Prisma.InputJsonValue | Prisma.JsonNullValueInput {
+): JsonValue | null {
 
 
 
   if (value === null) {
 
-    return Prisma.JsonNull;
+    return null;
 
   }
 
@@ -66,11 +75,13 @@ function normalizeJsonValue(
 
   if (Array.isArray(value)) {
 
-    return JSON.parse(
+    return value.map(
 
-      JSON.stringify(value)
+      (item) =>
 
-    ) as Prisma.InputJsonValue;
+        normalizeJsonValue(item) ?? ""
+
+    );
 
   }
 
@@ -88,11 +99,37 @@ function normalizeJsonValue(
 
   ) {
 
-    return JSON.parse(
 
-      JSON.stringify(value)
 
-    ) as Prisma.InputJsonValue;
+    const result: {
+
+      [key: string]: JsonValue;
+
+    } = {};
+
+
+
+
+    Object.entries(value).forEach(
+
+      ([key, val]) => {
+
+
+
+        result[key] =
+
+          normalizeJsonValue(val) ?? "";
+
+
+
+      }
+
+    );
+
+
+
+
+    return result;
 
   }
 
@@ -179,6 +216,7 @@ export async function createSubmission({
       data: {
 
 
+
         formId,
 
 
@@ -213,7 +251,7 @@ export async function createSubmission({
 
                     answer.value
 
-                  ),
+                  ) ?? {},
 
 
 
