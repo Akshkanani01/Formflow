@@ -50,6 +50,9 @@ type FormSubmitButtonProps = {
 
 
 
+
+
+
 export function FormSubmitButton({
 
   formId,
@@ -82,6 +85,8 @@ export function FormSubmitButton({
 
 
 
+
+
   function updateValue(
     fieldId:string,
     value:unknown
@@ -97,6 +102,9 @@ export function FormSubmitButton({
     }));
 
   }
+
+
+
 
 
 
@@ -223,6 +231,8 @@ export function FormSubmitButton({
 
 
 
+
+
   async function handleSubmit(){
 
 
@@ -244,18 +254,25 @@ export function FormSubmitButton({
 
 
 
+
     const answers =
-      fields.map((field)=>({
 
-        fieldId:
-          field.id,
+      fields.map(
+
+        (field)=>({
+
+          fieldId:
+            field.id,
 
 
-        value:
-          values[field.id] ?? "",
+          value:
+            values[field.id] ?? null,
+
+        })
+
+      );
 
 
-      }));
 
 
 
@@ -273,6 +290,7 @@ export function FormSubmitButton({
 
 
 
+
     setLoading(false);
 
     setSuccess(true);
@@ -285,11 +303,15 @@ export function FormSubmitButton({
 
 
 
+
+
+
   if(success){
 
     return (
 
       <div
+
         className="
           rounded-lg
           border
@@ -298,6 +320,7 @@ export function FormSubmitButton({
           text-sm
           text-emerald-700
         "
+
       >
 
         Response submitted successfully.
@@ -314,25 +337,34 @@ export function FormSubmitButton({
 
 
 
+
   return (
 
     <div
+
       className="
         space-y-8
       "
+
     >
 
 
 
       {fields.map(
+
         (field)=>(
 
           <div
+
             key={field.id}
+
             className="
               space-y-2
             "
+
           >
+
+
 
 
 
@@ -379,6 +411,7 @@ export function FormSubmitButton({
 
 
 
+
             {field.type === "EMAIL" && (
 
               <input
@@ -413,6 +446,7 @@ export function FormSubmitButton({
               />
 
             )}
+
 
 
 
@@ -460,13 +494,16 @@ export function FormSubmitButton({
 
 
 
+
             {errors[field.id] && (
 
               <p
+
                 className="
                   text-xs
                   text-destructive
                 "
+
               >
 
                 {errors[field.id]}
@@ -477,10 +514,15 @@ export function FormSubmitButton({
 
 
 
+
+
           </div>
 
         )
+
       )}
+
+
 
 
 

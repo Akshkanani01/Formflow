@@ -1,29 +1,112 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma";
 
 
 
-type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | {
-      [key: string]: JsonValue;
-    };
-
-
-
 type CreateSubmissionInput = {
+
   formId: string;
 
   answers: {
+
     fieldId: string;
-    value: JsonValue;
+
+    value: unknown;
+
   }[];
+
 };
+
+
+
+
+
+
+
+function normalizeJsonValue(
+
+  value: unknown
+
+): Prisma.InputJsonValue | Prisma.JsonNullValueInput {
+
+
+
+  if (value === null) {
+
+    return Prisma.JsonNull;
+
+  }
+
+
+
+
+
+  if (
+
+    typeof value === "string" ||
+
+    typeof value === "number" ||
+
+    typeof value === "boolean"
+
+  ) {
+
+    return value;
+
+  }
+
+
+
+
+
+
+
+  if (Array.isArray(value)) {
+
+    return JSON.parse(
+
+      JSON.stringify(value)
+
+    ) as Prisma.InputJsonValue;
+
+  }
+
+
+
+
+
+
+
+  if (
+
+    typeof value === "object" &&
+
+    value !== null
+
+  ) {
+
+    return JSON.parse(
+
+      JSON.stringify(value)
+
+    ) as Prisma.InputJsonValue;
+
+  }
+
+
+
+
+
+
+
+  return String(value);
+
+}
+
+
 
 
 
@@ -42,10 +125,13 @@ export async function createSubmission({
 
 
   const form =
+
     await prisma.form.findUnique({
 
       where: {
+
         id: formId,
+
       },
 
 
@@ -67,10 +153,13 @@ export async function createSubmission({
 
 
 
+
   if (!form) {
 
     throw new Error(
+
       "Form not found."
+
     );
 
   }
@@ -81,12 +170,17 @@ export async function createSubmission({
 
 
 
+
+
   const submission =
+
     await prisma.formSubmission.create({
 
       data: {
 
+
         formId,
+
 
 
         answers: {
@@ -97,11 +191,14 @@ export async function createSubmission({
 
               (answer) => ({
 
+
+
                 field: {
 
                   connect: {
 
                     id:
+
                       answer.fieldId,
 
                   },
@@ -109,8 +206,15 @@ export async function createSubmission({
                 },
 
 
+
                 value:
-                  answer.value,
+
+                  normalizeJsonValue(
+
+                    answer.value
+
+                  ),
+
 
 
               })
@@ -122,6 +226,7 @@ export async function createSubmission({
 
 
       },
+
 
     });
 
@@ -139,28 +244,39 @@ export async function createSubmission({
 
 
       userId:
+
         form.createdById,
 
 
+
       type:
+
         "RESPONSE",
 
 
+
       title:
+
         "New form response",
 
 
+
       message:
+
         `New response received for ${form.title}`,
+
 
 
       metadata: {
 
         formId:
+
           form.id,
 
 
+
         submissionId:
+
           submission.id,
 
       },
@@ -168,7 +284,10 @@ export async function createSubmission({
 
     },
 
+
   });
+
+
 
 
 
@@ -184,32 +303,47 @@ export async function createSubmission({
 
 
       workspaceId:
+
         form.workspaceId,
 
 
+
       userId:
+
         form.createdById,
 
 
+
       action:
+
         "CREATE",
 
 
+
       entityType:
+
         "FORM_SUBMISSION",
 
 
+
       entityId:
+
         submission.id,
 
 
+
       description:
+
         "New form submission received",
 
 
     },
 
+
   });
+
+
+
 
 
 
@@ -222,9 +356,13 @@ export async function createSubmission({
 
     success: true,
 
+
     submissionId:
+
       submission.id,
 
+
   };
+
 
 }
