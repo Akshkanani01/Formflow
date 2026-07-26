@@ -848,8 +848,15 @@ export function ResponseDialog({
 
                         {
                           data.submission.answers.map(
-
-                            (answer)=>(
+  (answer: {
+    id: string;
+    fieldId: string;
+    value: unknown;
+    field?: {
+      id: string;
+      label: string;
+    } | null;
+  })=>(
 
 
                               <div
