@@ -62,6 +62,7 @@ export function BuilderCanvas() {
 
 
 
+
   if (fields.length === 0) {
 
     return (
@@ -70,7 +71,9 @@ export function BuilderCanvas() {
         className="
           overflow-y-auto
           bg-muted/20
-          p-8
+          p-4
+          sm:p-6
+          lg:p-8
         "
       >
 
@@ -87,7 +90,8 @@ export function BuilderCanvas() {
             border
             border-dashed
             bg-background
-            p-10
+            p-6
+            sm:p-10
           "
         >
 
@@ -151,7 +155,9 @@ export function BuilderCanvas() {
       className="
         overflow-y-auto
         bg-muted/20
-        p-8
+        p-4
+        sm:p-6
+        lg:p-8
       "
     >
 
@@ -212,15 +218,11 @@ export function BuilderCanvas() {
 
 
                         className={`
-
                           rounded-xl
-
                           border
-
                           bg-background
-
-                          p-5
-
+                          p-4
+                          sm:p-5
                           transition
 
                           ${
@@ -229,13 +231,11 @@ export function BuilderCanvas() {
                               : ""
                           }
 
-
                           ${
                             selectedFieldId === field.id
                               ? "border-primary ring-2 ring-primary/20"
                               : "hover:border-primary/50"
                           }
-
                         `}
 
 
@@ -287,6 +287,7 @@ export function BuilderCanvas() {
 
                           <div
                             className="
+                              min-w-0
                               flex-1
                               space-y-4
                             "
@@ -299,9 +300,11 @@ export function BuilderCanvas() {
                             <div
                               className="
                                 flex
-                                items-start
-                                justify-between
-                                gap-4
+                                flex-col
+                                gap-3
+                                sm:flex-row
+                                sm:items-start
+                                sm:justify-between
                               "
                             >
 
@@ -310,6 +313,7 @@ export function BuilderCanvas() {
 
                                 <h3
                                   className="
+                                    break-words
                                     text-base
                                     font-semibold
                                   "
@@ -362,6 +366,8 @@ export function BuilderCanvas() {
                                   flex
                                   items-center
                                   gap-1
+                                  self-end
+                                  sm:self-auto
                                 "
                               >
 

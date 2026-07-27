@@ -41,12 +41,20 @@ export default async function BuilderPage({
 
 
 
+
+
   const workspace =
     await getOrCreateWorkspace({
+
       id: session.user.id,
+
       name: session.user.name,
+
       email: session.user.email,
+
     });
+
+
 
 
 
@@ -55,109 +63,188 @@ export default async function BuilderPage({
 
 
 
+
+
   const form =
     await getForm({
+
       workspaceId: workspace.id,
+
       formId: id,
+
     });
 
 
 
+
+
   if (!form) {
+
     notFound();
+
   }
+
+
 
 
 
   const formFields =
     await prisma.formField.findMany({
 
-      where:{
+      where: {
+
         formId: form.id,
+
       },
 
-      orderBy:{
-        position:"asc",
+
+      orderBy: {
+
+        position: "asc",
+
       },
 
     });
 
 
 
-const initialFields =
-  formFields.map(
 
-    (field) =>
 
-      mapFormFieldToBuilder({
 
-        id:
-          field.id,
 
-        type:
-          String(field.type),
+  const initialFields =
 
-        label:
-          field.label,
+    formFields.map(
 
-        placeholder:
-          field.placeholder,
+      (field) =>
 
-        helpText:
-          field.helpText,
+        mapFormFieldToBuilder({
 
-        required:
-          field.required,
+          id:
 
-      })
+            field.id,
 
-  );
+
+          type:
+
+            String(field.type),
+
+
+          label:
+
+            field.label,
+
+
+          placeholder:
+
+            field.placeholder,
+
+
+          helpText:
+
+            field.helpText,
+
+
+          required:
+
+            field.required,
+
+        })
+
+    );
+
+
+
+
+
 
 
   return (
 
     <div
+
       className="
         flex
         h-[calc(100vh-4rem)]
+        min-h-0
         flex-col
         overflow-hidden
         bg-background
       "
+
     >
 
+
+
       <BuilderProvider
+
         formId={form.id}
+
         initialFields={initialFields}
+
       >
 
 
+
         <BuilderHeader
+
           title={form.title}
+
           formId={form.id}
+
         />
 
 
 
+
+
+
+
         <div
+
           className="
-            grid
+            relative
+            min-h-0
             flex-1
             overflow-hidden
-            grid-cols-[260px_minmax(0,1fr)_320px]
+
+            lg:grid
+            lg:grid-cols-[260px_minmax(0,1fr)_320px]
           "
+
         >
+
+
+
+
+          {/* Sidebar */}
 
           <BuilderSidebar />
 
 
+
+
+
+
+          {/* Canvas */}
+
           <BuilderCanvas />
 
+
+
+
+
+
+          {/* Properties */}
 
           <BuilderProperties />
 
 
+
+
         </div>
+
+
 
 
       </BuilderProvider>

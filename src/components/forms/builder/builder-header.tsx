@@ -40,41 +40,57 @@ export function BuilderHeader({
 
 
 
+
+
   return (
+
     <header
+
       className="
         flex
         h-16
         shrink-0
         items-center
         justify-between
+        gap-3
         border-b
         bg-background
-        px-6
+        px-3
+        sm:px-6
       "
+
     >
+
+
 
       {/* Left */}
 
       <div
+
         className="
           flex
+          min-w-0
           items-center
-          gap-4
+          gap-3
         "
+
       >
 
         <Link
+
           href="/dashboard/forms"
+
           className="
             inline-flex
             h-10
             w-10
+            shrink-0
             items-center
             justify-center
             rounded-lg
             hover:bg-muted
           "
+
         >
 
           <ArrowLeft
@@ -85,19 +101,34 @@ export function BuilderHeader({
 
 
 
-        <div>
+
+
+        <div
+          className="
+            min-w-0
+          "
+        >
 
           <h1
+
             className="
+              max-w-[160px]
+              truncate
               text-sm
               font-semibold
+              sm:max-w-none
             "
+
           >
+
             {title}
+
           </h1>
 
 
+
           <div
+
             className="
               mt-1
               flex
@@ -106,14 +137,17 @@ export function BuilderHeader({
               text-xs
               text-muted-foreground
             "
+
           >
 
             <CheckCircle2
+
               className="
                 h-3
                 w-3
                 text-emerald-500
               "
+
             />
 
             Saved
@@ -130,23 +164,35 @@ export function BuilderHeader({
 
 
 
+
+
       {/* Actions */}
 
       <div
+
         className="
           flex
+          shrink-0
           items-center
-          gap-2
+          gap-1
+          sm:gap-2
         "
+
       >
 
 
         <Button
+
           type="button"
+
           variant="ghost"
+
           size="icon"
+
           disabled={!canUndo}
+
           onClick={undo}
+
         >
 
           <Undo2
@@ -157,12 +203,20 @@ export function BuilderHeader({
 
 
 
+
+
         <Button
+
           type="button"
+
           variant="ghost"
+
           size="icon"
+
           disabled={!canRedo}
+
           onClick={redo}
+
         >
 
           <Redo2
@@ -174,54 +228,95 @@ export function BuilderHeader({
 
 
 
+
+
+
         <Link
+
           href={`/dashboard/forms/${formId}/preview`}
+
         >
 
           <Button
+
             type="button"
+
             variant="outline"
+
             size="sm"
+
           >
 
             <Eye
+
               className="
-                mr-2
                 h-4
                 w-4
+                sm:mr-2
               "
+
             />
 
-            Preview
+            <span
+              className="
+                hidden
+                sm:inline
+              "
+            >
+              Preview
+            </span>
+
 
           </Button>
+
 
         </Link>
 
 
 
 
+
+
+
         <Button
+
           type="button"
+
           size="sm"
+
         >
 
           <Rocket
+
             className="
-              mr-2
               h-4
               w-4
+              sm:mr-2
             "
+
           />
 
-          Publish
+          <span
+            className="
+              hidden
+              sm:inline
+            "
+          >
+            Publish
+          </span>
+
 
         </Button>
+
+
+
 
 
       </div>
 
 
     </header>
+
   );
+
 }
