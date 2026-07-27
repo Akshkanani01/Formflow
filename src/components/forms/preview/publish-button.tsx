@@ -11,9 +11,11 @@ import {
   Rocket,
 } from "lucide-react";
 
+
 import {
   Button,
 } from "@/components/ui/button";
+
 
 import {
   publishForm,
@@ -21,11 +23,21 @@ import {
 
 
 
+
+
 type PublishButtonProps = {
 
   formId:string;
 
+  initialStatus:string;
+
+  initialUrl:string;
+
 };
+
+
+
+
 
 
 
@@ -34,25 +46,42 @@ export function PublishButton({
 
   formId,
 
+  initialStatus,
+
+  initialUrl,
+
 }:PublishButtonProps){
 
 
 
   const [loading,setLoading] =
+
     useState(false);
+
 
 
   const [published,setPublished] =
-    useState(false);
+
+    useState(
+
+      initialStatus === "PUBLISHED"
+
+    );
+
 
 
   const [url,setUrl] =
-    useState("");
+
+    useState(initialUrl);
 
 
 
   const [copied,setCopied] =
+
     useState(false);
+
+
+
 
 
 
@@ -61,13 +90,18 @@ export function PublishButton({
   async function handlePublish(){
 
 
-    try {
+
+    try{
+
 
       setLoading(true);
 
 
 
+
+
       const result =
+
         await publishForm({
 
           formId,
@@ -77,19 +111,20 @@ export function PublishButton({
 
 
 
-      const fullUrl =
-        `${window.location.origin}${result.publicUrl}`;
 
+      setUrl(
 
+        result.publicUrl
 
-      setUrl(fullUrl);
+      );
+
 
 
       setPublished(true);
 
 
 
-    } finally {
+    }finally{
 
 
       setLoading(false);
@@ -97,7 +132,12 @@ export function PublishButton({
 
     }
 
+
   }
+
+
+
+
 
 
 
@@ -107,16 +147,33 @@ export function PublishButton({
 
 
     if(!url){
+
       return;
+
     }
 
 
+
+
+    const fullUrl =
+
+      `${window.location.origin}${url}`;
+
+
+
+
     await navigator.clipboard.writeText(
-      url
+
+      fullUrl
+
     );
 
 
+
+
+
     setCopied(true);
+
 
 
 
@@ -127,7 +184,10 @@ export function PublishButton({
     },2000);
 
 
+
   }
+
+
 
 
 
@@ -137,11 +197,21 @@ export function PublishButton({
   if(published){
 
 
+
+    const fullUrl =
+
+      `${window.location.origin}${url}`;
+
+
+
+
     return (
 
       <div
+
         className="
           flex
+          flex-wrap
           items-center
           gap-3
           rounded-xl
@@ -150,46 +220,60 @@ export function PublishButton({
           px-4
           py-3
         "
+
       >
 
 
         <CheckCircle2
+
           className="
             h-5
             w-5
             text-emerald-500
           "
+
         />
 
 
 
         <div
+
           className="
             flex
             min-w-0
+            flex-1
             flex-col
           "
+
         >
 
           <span
+
             className="
               text-sm
               font-medium
             "
+
           >
+
             Published
+
           </span>
 
 
+
           <span
+
             className="
-              max-w-sm
               truncate
               text-xs
               text-muted-foreground
             "
+
           >
-            {url}
+
+            {fullUrl}
+
           </span>
 
 
@@ -201,22 +285,17 @@ export function PublishButton({
 
         <Button
 
-          type="button"
-
           size="icon"
 
           variant="ghost"
+
+          type="button"
 
           onClick={copyUrl}
 
         >
 
-          <Copy
-            className="
-              h-4
-              w-4
-            "
-          />
+          <Copy className="h-4 w-4"/>
 
         </Button>
 
@@ -226,7 +305,7 @@ export function PublishButton({
 
         <a
 
-          href={url}
+          href={fullUrl}
 
           target="_blank"
 
@@ -236,20 +315,15 @@ export function PublishButton({
 
           <Button
 
-            type="button"
-
             size="icon"
 
             variant="ghost"
 
+            type="button"
+
           >
 
-            <ExternalLink
-              className="
-                h-4
-                w-4
-              "
-            />
+            <ExternalLink className="h-4 w-4"/>
 
           </Button>
 
@@ -260,18 +334,26 @@ export function PublishButton({
 
 
 
-        {copied && (
 
-          <span
-            className="
-              text-xs
-              text-emerald-600
-            "
-          >
-            Copied
-          </span>
+        {
+          copied && (
 
-        )}
+            <span
+
+              className="
+                text-xs
+                text-emerald-600
+              "
+
+            >
+
+              Copied
+
+            </span>
+
+          )
+        }
+
 
 
       </div>
@@ -285,35 +367,45 @@ export function PublishButton({
 
 
 
+
+
+
   return (
 
     <Button
 
       size="sm"
 
-      onClick={handlePublish}
-
       disabled={loading}
+
+      onClick={handlePublish}
 
     >
 
       <Rocket
+
         className="
           mr-2
           h-4
           w-4
         "
+
       />
+
 
       {
         loading
+
           ? "Publishing..."
+
           : "Publish"
+
       }
 
 
     </Button>
 
   );
+
 
 }

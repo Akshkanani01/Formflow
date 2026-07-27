@@ -35,7 +35,8 @@ export default async function DashboardPage() {
 
     await auth.api.getSession({
 
-      headers: await headers(),
+      headers:
+        await headers(),
 
     });
 
@@ -58,11 +59,14 @@ export default async function DashboardPage() {
 
   await getOrCreateWorkspace({
 
-    id:session.user.id,
+    id:
+      session.user.id,
 
-    name:session.user.name,
+    name:
+      session.user.name,
 
-    email:session.user.email,
+    email:
+      session.user.email,
 
   });
 
@@ -76,10 +80,10 @@ export default async function DashboardPage() {
 
     await getDashboardData({
 
-      userId:session.user.id,
+      userId:
+        session.user.id,
 
     });
-
 
 
 
@@ -92,11 +96,16 @@ export default async function DashboardPage() {
     <main
 
       className="
-        space-y-8
-        pb-10
+        space-y-6
+        pb-8
+
+        sm:space-y-8
+        sm:pb-10
       "
 
     >
+
+
 
 
 
@@ -107,11 +116,14 @@ export default async function DashboardPage() {
       <section
 
         className="
-          rounded-[32px]
+          rounded-2xl
           border
           bg-card
-          p-8
+          p-5
           shadow-sm
+
+          sm:rounded-[32px]
+          sm:p-8
         "
 
       >
@@ -145,8 +157,12 @@ export default async function DashboardPage() {
 
         className="
           grid
-          gap-6
+          gap-4
+
+          sm:gap-6
+
           md:grid-cols-2
+
           xl:grid-cols-4
         "
 
@@ -174,6 +190,8 @@ export default async function DashboardPage() {
 
 
 
+
+
         <StatsCard
 
           title="Responses"
@@ -192,6 +210,8 @@ export default async function DashboardPage() {
 
 
 
+
+
         <StatsCard
 
           title="Views"
@@ -205,6 +225,8 @@ export default async function DashboardPage() {
           icon={Eye}
 
         />
+
+
 
 
 
@@ -241,19 +263,25 @@ export default async function DashboardPage() {
       <section
 
         className="
-          rounded-[32px]
+          rounded-2xl
           border
           bg-card
-          p-8
+          p-5
           shadow-sm
+
+          sm:rounded-[32px]
+          sm:p-8
         "
 
       >
 
+
         <div
 
           className="
-            mb-6
+            mb-5
+
+            sm:mb-6
           "
 
         >
@@ -261,8 +289,10 @@ export default async function DashboardPage() {
           <h2
 
             className="
-              text-xl
+              text-lg
               font-bold
+
+              sm:text-xl
             "
 
           >
@@ -271,6 +301,7 @@ export default async function DashboardPage() {
 
 
           </h2>
+
 
 
           <p
@@ -295,25 +326,39 @@ export default async function DashboardPage() {
 
 
 
-        <AnalyticsOverview
 
-          totalForms={
-            data.stats.totalForms
-          }
 
-          totalResponses={
-            data.stats.totalResponses
-          }
+        <div
 
-          totalViews={
-            data.stats.totalViews
-          }
+          className="
+            overflow-hidden
+          "
 
-          publishedForms={
-            data.stats.publishedForms
-          }
+        >
 
-        />
+          <AnalyticsOverview
+
+            totalForms={
+              data.stats.totalForms
+            }
+
+            totalResponses={
+              data.stats.totalResponses
+            }
+
+            totalViews={
+              data.stats.totalViews
+            }
+
+            publishedForms={
+              data.stats.publishedForms
+            }
+
+          />
+
+
+        </div>
+
 
 
       </section>
@@ -331,14 +376,18 @@ export default async function DashboardPage() {
       <section
 
         className="
-          rounded-[32px]
+          rounded-2xl
           border
           bg-card
-          p-8
+          p-5
           shadow-sm
+
+          sm:rounded-[32px]
+          sm:p-8
         "
 
       >
+
 
         <div
 
@@ -351,8 +400,10 @@ export default async function DashboardPage() {
           <h2
 
             className="
-              text-xl
+              text-lg
               font-bold
+
+              sm:text-xl
             "
 
           >
@@ -364,6 +415,8 @@ export default async function DashboardPage() {
 
 
         </div>
+
+
 
 
 
@@ -386,7 +439,10 @@ export default async function DashboardPage() {
 
         className="
           grid
-          gap-6
+          gap-4
+
+          sm:gap-6
+
           xl:grid-cols-2
         "
 
@@ -394,14 +450,19 @@ export default async function DashboardPage() {
 
 
 
+
+
         <div
 
           className="
-            rounded-[32px]
+            rounded-2xl
             border
             bg-card
-            p-8
+            p-5
             shadow-sm
+
+            sm:rounded-[32px]
+            sm:p-8
           "
 
         >
@@ -423,14 +484,19 @@ export default async function DashboardPage() {
 
 
 
+
+
         <div
 
           className="
-            rounded-[32px]
+            rounded-2xl
             border
             bg-card
-            p-8
+            p-5
             shadow-sm
+
+            sm:rounded-[32px]
+            sm:p-8
           "
 
         >
@@ -445,6 +511,7 @@ export default async function DashboardPage() {
 
 
         </div>
+
 
 
 

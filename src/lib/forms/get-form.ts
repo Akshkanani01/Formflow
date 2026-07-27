@@ -1,18 +1,55 @@
 import { prisma } from "@/lib/prisma";
 
+
 type GetFormOptions = {
-  workspaceId: string;
-  formId: string;
+
+  workspaceId:string;
+
+  formId:string;
+
 };
 
+
+
+
+
 export async function getForm({
+
   workspaceId,
+
   formId,
-}: GetFormOptions) {
+
+}:GetFormOptions){
+
+
   return prisma.form.findFirst({
-    where: {
-      id: formId,
+
+    where:{
+
+      id:formId,
+
       workspaceId,
+
     },
+
+
+    select:{
+
+      id:true,
+
+      title:true,
+
+      description:true,
+
+      slug:true,
+
+      status:true,
+
+      publishedAt:true,
+
+    },
+
   });
+
+
 }

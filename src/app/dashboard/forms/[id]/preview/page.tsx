@@ -38,20 +38,19 @@ type PreviewPageProps = {
 
 type PreviewField = {
 
-  id: string;
+  id:string;
 
-  type: string;
+  type:string;
 
-  label: string;
+  label:string;
 
-  placeholder: string | null;
+  placeholder:string | null;
 
-  required: boolean;
+  required:boolean;
 
-  settings: unknown;
+  settings:unknown;
 
 };
-
 
 
 
@@ -62,8 +61,7 @@ export default async function PreviewPage({
 
   params,
 
-}: PreviewPageProps) {
-
+}:PreviewPageProps){
 
 
 
@@ -79,7 +77,7 @@ export default async function PreviewPage({
 
 
 
-  if (!session) {
+  if(!session){
 
     redirect("/login");
 
@@ -95,11 +93,11 @@ export default async function PreviewPage({
 
     await getOrCreateWorkspace({
 
-      id: session.user.id,
+      id:session.user.id,
 
-      name: session.user.name,
+      name:session.user.name,
 
-      email: session.user.email,
+      email:session.user.email,
 
     });
 
@@ -109,9 +107,7 @@ export default async function PreviewPage({
 
 
 
-  const { id } =
-
-    await params;
+  const { id } = await params;
 
 
 
@@ -123,9 +119,9 @@ export default async function PreviewPage({
 
     await getForm({
 
-      workspaceId: workspace.id,
+      workspaceId:workspace.id,
 
-      formId: id,
+      formId:id,
 
     });
 
@@ -135,7 +131,7 @@ export default async function PreviewPage({
 
 
 
-  if (!form) {
+  if(!form){
 
     notFound();
 
@@ -147,19 +143,20 @@ export default async function PreviewPage({
 
 
 
-  const fields: PreviewField[] =
+
+  const fields:PreviewField[] =
 
     await prisma.formField.findMany({
 
-      where: {
+      where:{
 
-        formId: form.id,
+        formId:form.id,
 
       },
 
-      orderBy: {
+      orderBy:{
 
-        position: "asc",
+        position:"asc",
 
       },
 
@@ -176,17 +173,17 @@ export default async function PreviewPage({
 
     fields.map(
 
-      (field: PreviewField) => ({
+      (field:PreviewField)=>({
 
-        id: field.id,
+        id:field.id,
 
-        type: field.type,
+        type:field.type,
 
-        label: field.label,
+        label:field.label,
 
-        placeholder: field.placeholder,
+        placeholder:field.placeholder,
 
-        required: field.required,
+        required:field.required,
 
         settings:
 
@@ -198,11 +195,11 @@ export default async function PreviewPage({
 
             ? field.settings as {
 
-                min?: number;
+                min?:number;
 
-                max?: number;
+                max?:number;
 
-                options?: string[];
+                options?:string[];
 
               }
 
@@ -221,20 +218,15 @@ export default async function PreviewPage({
 
   return (
 
-
     <main
 
       className="
         min-h-screen
-
         bg-muted/20
-
         px-4
-
         py-6
 
         sm:px-6
-
         sm:py-10
       "
 
@@ -244,19 +236,13 @@ export default async function PreviewPage({
 
 
 
-
-
-      {/* Top Actions */}
-
       <div
 
         className="
           mx-auto
           mb-5
-
           flex
           max-w-3xl
-
           flex-col
           gap-3
 
@@ -275,7 +261,6 @@ export default async function PreviewPage({
 
           className="
             w-full
-
             sm:w-auto
           "
 
@@ -289,7 +274,6 @@ export default async function PreviewPage({
 
             className="
               w-full
-
               sm:w-auto
             "
 
@@ -319,9 +303,22 @@ export default async function PreviewPage({
 
 
 
+
         <PublishButton
 
           formId={form.id}
+
+          initialStatus={form.status}
+
+          initialUrl={
+
+            form.slug
+
+              ? `/forms/${form.slug}`
+
+              : ""
+
+          }
 
         />
 
@@ -338,27 +335,18 @@ export default async function PreviewPage({
 
 
 
-      {/* Form Card */}
-
       <div
 
         className="
           mx-auto
-
           max-w-3xl
-
           rounded-2xl
-
           border
-
           bg-background
-
           p-5
-
           shadow-sm
 
           sm:rounded-3xl
-
           sm:p-8
         "
 
@@ -368,14 +356,10 @@ export default async function PreviewPage({
 
 
 
-
-
-
         <div
 
           className="
             border-b
-
             pb-5
 
             sm:pb-6
@@ -384,13 +368,12 @@ export default async function PreviewPage({
         >
 
 
+
           <h1
 
             className="
               break-words
-
               text-2xl
-
               font-bold
 
               sm:text-3xl
@@ -400,10 +383,7 @@ export default async function PreviewPage({
 
             {form.title}
 
-
           </h1>
-
-
 
 
 
@@ -416,9 +396,7 @@ export default async function PreviewPage({
 
                 className="
                   mt-3
-
                   text-sm
-
                   text-muted-foreground
 
                   sm:text-base
@@ -428,11 +406,12 @@ export default async function PreviewPage({
 
                 {form.description}
 
-
               </p>
 
             )
           }
+
+
 
 
 
@@ -450,11 +429,9 @@ export default async function PreviewPage({
 
           className="
             mt-6
-
             space-y-6
 
             sm:mt-8
-
             sm:space-y-8
           "
 
@@ -465,7 +442,7 @@ export default async function PreviewPage({
           {
             fields.map(
 
-              (field: PreviewField) => (
+              (field:PreviewField)=>(
 
 
                 <div
@@ -480,12 +457,10 @@ export default async function PreviewPage({
 
 
 
-
                   <label
 
                     className="
                       text-sm
-
                       font-semibold
                     "
 
@@ -502,7 +477,6 @@ export default async function PreviewPage({
 
                           className="
                             ml-1
-
                             text-destructive
                           "
 
@@ -524,24 +498,23 @@ export default async function PreviewPage({
 
 
 
-
                   <FormFieldPreview
 
                     field={{
 
-                      type: field.type,
+                      type:field.type,
 
-                      label: field.label,
+                      label:field.label,
 
-                      placeholder: field.placeholder,
+                      placeholder:field.placeholder,
 
-                      required: field.required,
+                      required:field.required,
 
                       settings:
 
                         submitFields.find(
 
-                          (item) =>
+                          (item)=>
 
                             item.id === field.id
 
@@ -577,28 +550,25 @@ export default async function PreviewPage({
 
           className="
             mt-8
-
             border-t
-
             pt-5
 
             sm:mt-10
-
             sm:pt-6
           "
 
         >
 
-          <FormSubmitButton
 
+
+          <FormSubmitButton
 
             formId={form.id}
 
-
             fields={submitFields}
 
-
           />
+
 
 
         </div>
@@ -615,7 +585,6 @@ export default async function PreviewPage({
 
 
     </main>
-
 
   );
 
