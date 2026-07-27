@@ -7,15 +7,28 @@ import {
 } from "@/components/forms/public/public-form-client";
 
 
+
 type PublicFormField = {
+
   id: string;
+
   type: string;
+
   label: string;
+
   placeholder: string | null;
+
   required: boolean;
+
   settings: unknown;
+
 };
+
+
+
 export const dynamic = "force-dynamic";
+
+
 
 
 
@@ -24,6 +37,8 @@ const FormStatus = {
   PUBLISHED: "PUBLISHED",
 
 } as const;
+
+
 
 
 
@@ -38,6 +53,7 @@ type PublicFormPageProps = {
   }>;
 
 };
+
 
 
 
@@ -65,6 +81,7 @@ export default async function PublicFormPage({
 
 
 
+
   const form =
 
     await prisma.form.findFirst({
@@ -78,7 +95,6 @@ export default async function PublicFormPage({
           FormStatus.PUBLISHED,
 
       },
-
 
 
       include: {
@@ -105,6 +121,7 @@ export default async function PublicFormPage({
 
 
 
+
   if (!form) {
 
     notFound();
@@ -121,127 +138,153 @@ export default async function PublicFormPage({
 
   return (
 
+
     <main
 
       className="
         min-h-screen
+
         bg-muted/20
-        px-6
-        py-10
+
+        px-4
+
+        py-6
+
+        sm:px-6
+
+        sm:py-10
       "
 
     >
 
 
 
-      <PublicFormClient
 
-        form={{
 
+      <div
 
+        className="
+          mx-auto
 
-          id:
+          w-full
 
-            form.id,
+          max-w-3xl
+        "
 
+      >
 
 
-          title:
 
-            form.title,
+        <PublicFormClient
 
+          form={{
 
+            id:
 
-          description:
+              form.id,
 
-            form.description,
 
 
+            title:
 
+              form.title,
 
 
-          fields:
-  form.fields.map(
 
-    (field: PublicFormField) => ({
+            description:
 
+              form.description,
 
 
-                id:
 
-                  field.id,
 
 
+            fields:
 
-                type:
+              form.fields.map(
 
-                  field.type,
+                (field: PublicFormField) => ({
 
 
+                  id:
 
-                label:
+                    field.id,
 
-                  field.label,
 
 
+                  type:
 
-                placeholder:
+                    field.type,
 
-                  field.placeholder,
 
 
+                  label:
 
-                required:
+                    field.label,
 
-                  field.required,
 
 
+                  placeholder:
 
+                    field.placeholder,
 
 
-                settings:
 
-                  field.settings &&
+                  required:
 
-                  typeof field.settings === "object" &&
+                    field.required,
 
-                  !Array.isArray(field.settings)
 
 
 
-                    ? field.settings as {
 
-                        options?: string[];
+                  settings:
 
-                        min?: number;
+                    field.settings &&
 
-                        max?: number;
+                    typeof field.settings === "object" &&
 
-                        maxSize?: number;
+                    !Array.isArray(field.settings)
 
-                      }
 
 
+                      ? field.settings as {
 
-                    : undefined,
+                          options?: string[];
 
+                          min?: number;
 
+                          max?: number;
 
-              })
+                          maxSize?: number;
 
-            ),
+                        }
 
 
 
-        }}
+                      : undefined,
 
 
 
-      />
+                })
+
+              ),
+
+
+          }}
+
+        />
+
+
+
+      </div>
+
+
 
 
 
     </main>
+
 
   );
 

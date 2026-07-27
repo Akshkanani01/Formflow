@@ -4,19 +4,15 @@ import {
   useState,
 } from "react";
 
-
 import {
   UploadButton,
 } from "@/lib/uploadthing";
-
 
 import {
   Star,
   Loader2,
   FileText,
 } from "lucide-react";
-
-
 
 
 
@@ -30,11 +26,11 @@ type PublicFieldRendererProps = {
 
     label:string;
 
-    placeholder?:string | null;
+    placeholder?:string|null;
 
     required:boolean;
 
-    settings?: {
+    settings?:{
 
       options?:string[];
 
@@ -55,11 +51,7 @@ type PublicFieldRendererProps = {
   error?:string;
 
 
-  onChange:(
-
-    value:unknown
-
-  )=>void;
+  onChange:(value:unknown)=>void;
 
 };
 
@@ -85,6 +77,7 @@ export function PublicFieldRenderer({
 
 
   const [uploading,setUploading] =
+
     useState(false);
 
 
@@ -92,6 +85,7 @@ export function PublicFieldRenderer({
 
 
   const options =
+
     field.settings?.options ?? [];
 
 
@@ -102,7 +96,7 @@ export function PublicFieldRenderer({
 
   const inputClass = `
 
-    h-11
+    h-12
 
     w-full
 
@@ -120,10 +114,15 @@ export function PublicFieldRenderer({
 
     transition
 
+    focus:ring-2
+
     ${
       error
-        ? "border-destructive focus:ring-destructive"
-        : "focus:ring-2 focus:ring-primary/20"
+
+      ? "border-destructive focus:ring-destructive"
+
+      : "focus:ring-primary/20"
+
     }
 
   `;
@@ -142,37 +141,58 @@ export function PublicFieldRenderer({
 
     case "short-text":
 
+    case "EMAIL":
+
+    case "PHONE":
+
+    case "phone":
+
       return (
 
         <input
 
-          value={
-            String(value ?? "")
+          type={
+
+            field.type === "EMAIL"
+
+            ? "email"
+
+            : field.type === "PHONE" ||
+
+              field.type === "phone"
+
+              ? "tel"
+
+              : "text"
+
           }
 
 
-          onChange={(event)=>
+          value={String(value ?? "")}
+
+
+          onChange={(e)=>
 
             onChange(
-              event.target.value
+              e.target.value
             )
 
           }
 
 
           placeholder={
+
             field.placeholder ?? ""
+
           }
 
 
-          className={
-            inputClass
-          }
-
+          className={inputClass}
 
         />
 
       );
+
 
 
 
@@ -188,15 +208,13 @@ export function PublicFieldRenderer({
 
         <textarea
 
-          value={
-            String(value ?? "")
-          }
+          value={String(value ?? "")}
 
 
-          onChange={(event)=>
+          onChange={(e)=>
 
             onChange(
-              event.target.value
+              e.target.value
             )
 
           }
@@ -206,11 +224,15 @@ export function PublicFieldRenderer({
 
 
           placeholder={
+
             field.placeholder ?? ""
+
           }
 
 
           className={`
+
+            min-h-32
 
             w-full
 
@@ -226,17 +248,18 @@ export function PublicFieldRenderer({
 
             outline-none
 
-
-            ${
-              error
-                ? "border-destructive"
-                : ""
-            }
-
+            transition
 
             focus:ring-2
 
-            focus:ring-primary/20
+            ${
+              error
+
+              ? "border-destructive focus:ring-destructive"
+
+              : "focus:ring-primary/20"
+
+            }
 
           `}
 
@@ -245,88 +268,6 @@ export function PublicFieldRenderer({
       );
 
 
-
-
-
-
-
-    case "EMAIL":
-
-      return (
-
-        <input
-
-          type="email"
-
-
-          value={
-            String(value ?? "")
-          }
-
-
-          onChange={(event)=>
-
-            onChange(
-              event.target.value
-            )
-
-          }
-
-
-          placeholder="email@example.com"
-
-
-          className={
-            inputClass
-          }
-
-
-        />
-
-      );
-
-
-
-
-
-
-
-    case "PHONE":
-
-    case "phone":
-
-      return (
-
-        <input
-
-          type="tel"
-
-
-          value={
-            String(value ?? "")
-          }
-
-
-          onChange={(event)=>
-
-            onChange(
-              event.target.value
-            )
-
-          }
-
-
-          placeholder="+91 Phone number"
-
-
-          className={
-            inputClass
-          }
-
-
-        />
-
-      );
 
 
 
@@ -343,39 +284,39 @@ export function PublicFieldRenderer({
           type="number"
 
 
-          value={
-            String(value ?? "")
-          }
+          value={String(value ?? "")}
 
 
-          min={
-            field.settings?.min
-          }
+          min={field.settings?.min}
 
 
-          max={
-            field.settings?.max
-          }
+          max={field.settings?.max}
 
 
-          onChange={(event)=>
+          onChange={(e)=>
 
             onChange(
-              event.target.value
+              e.target.value
             )
 
           }
 
 
-          className={
-            inputClass
-          }
-
+          className={inputClass}
 
         />
 
       );
-          case "SELECT":
+
+
+
+
+
+
+
+
+
+    case "SELECT":
 
     case "dropdown":
 
@@ -383,24 +324,19 @@ export function PublicFieldRenderer({
 
         <select
 
-          value={
-            String(value ?? "")
-          }
+          value={String(value ?? "")}
 
 
-          onChange={(event)=>
+          onChange={(e)=>
 
             onChange(
-              event.target.value
+              e.target.value
             )
 
           }
 
 
-          className={
-            inputClass
-          }
-
+          className={inputClass}
 
         >
 
@@ -412,25 +348,21 @@ export function PublicFieldRenderer({
 
 
           {
-            options.map(
+            options.map((option,index)=>(
 
-              (option,index)=>(
+              <option
 
-                <option
+                key={index}
 
-                  key={index}
+                value={option}
 
-                  value={option}
+              >
 
-                >
+                {option}
 
-                  {option}
+              </option>
 
-                </option>
-
-              )
-
-            )
+            ))
           }
 
 
@@ -444,72 +376,83 @@ export function PublicFieldRenderer({
 
 
 
+
+
     case "RADIO":
 
     case "radio":
 
       return (
 
-        <div
-          className="
-            space-y-3
-          "
-        >
+        <div className="space-y-3">
 
           {
-            options.map(
+            options.map((option,index)=>(
 
-              (option,index)=>(
+              <label
 
-                <label
+                key={index}
 
-                  key={index}
+                className="
 
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    text-sm
-                  "
+                  flex
 
-                >
+                  min-h-12
 
-                  <input
+                  cursor-pointer
 
-                    type="radio"
+                  items-center
+
+                  gap-3
+
+                  rounded-xl
+
+                  border
+
+                  px-4
+
+                  text-sm
+
+                  transition
+
+                  hover:bg-muted/40
+
+                "
+
+              >
+
+                <input
+
+                  type="radio"
+
+                  checked={
+                    value === option
+                  }
+
+                  onChange={()=>{
+
+                    onChange(option);
+
+                  }}
+
+                  className="h-4 w-4"
+
+                />
 
 
-                    checked={
-                      value === option
-                    }
+                {option}
 
 
-                    onChange={()=>{
+              </label>
 
-                      onChange(
-                        option
-                      );
-
-                    }}
-
-
-                  />
-
-
-                  {option}
-
-
-                </label>
-
-              )
-
-            )
+            ))
           }
-
 
         </div>
 
       );
+
+
 
 
 
@@ -523,110 +466,118 @@ export function PublicFieldRenderer({
 
       return (
 
-        <div
-          className="
-            space-y-3
-          "
-        >
+        <div className="space-y-3">
+
 
           {
-            options.map(
+            options.map((option,index)=>(
 
-              (option,index)=>(
+              <label
 
-                <label
+                key={index}
 
-                  key={index}
+                className="
 
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    text-sm
-                  "
+                  flex
 
-                >
+                  min-h-12
 
-                  <input
+                  cursor-pointer
 
-                    type="checkbox"
+                  items-center
+
+                  gap-3
+
+                  rounded-xl
+
+                  border
+
+                  px-4
+
+                  text-sm
+
+                  transition
+
+                  hover:bg-muted/40
+
+                "
+
+              >
+
+                <input
+
+                  type="checkbox"
 
 
-                    checked={
+                  checked={
+
+                    Array.isArray(value)
+
+                    &&
+
+                    value.includes(option)
+
+                  }
+
+
+                  onChange={(e)=>{
+
+
+                    const current =
 
                       Array.isArray(value)
 
-                      &&
+                      ? value
 
-                      value.includes(option)
-
-                    }
-
-
-                    onChange={(event)=>{
-
-
-                      const current =
-
-                        Array.isArray(value)
-
-                          ? value
-
-                          : [];
+                      : [];
 
 
 
-                      if(event.target.checked){
+                    onChange(
 
+                      e.target.checked
 
-                        onChange([
+                      ? [
 
                           ...current,
 
                           option,
 
-                        ]);
+                        ]
+
+                      : current.filter(
+
+                          (item)=>
+
+                            item !== option
+
+                        )
+
+                    );
 
 
-                      }else{
+                  }}
 
 
-                        onChange(
+                  className="h-4 w-4"
 
-                          current.filter(
-
-                            (item)=>
-
-                              item !== option
-
-                          )
-
-                        );
+                />
 
 
-                      }
+                {option}
 
 
-                    }}
+              </label>
 
-
-                  />
-
-
-                  {option}
-
-
-                </label>
-
-              )
-
-            )
+            ))
           }
 
 
         </div>
 
       );
+
+
 
 
 
@@ -642,29 +593,23 @@ export function PublicFieldRenderer({
 
           type="date"
 
+          value={String(value ?? "")}
 
-          value={
-            String(value ?? "")
-          }
-
-
-          onChange={(event)=>
+          onChange={(e)=>
 
             onChange(
-              event.target.value
+              e.target.value
             )
 
           }
 
-
-          className={
-            inputClass
-          }
-
+          className={inputClass}
 
         />
 
       );
+
+
 
 
 
@@ -679,146 +624,151 @@ export function PublicFieldRenderer({
       return (
 
         <div
+
           className="
             flex
+            flex-wrap
             gap-2
           "
+
         >
 
           {
-            [1,2,3,4,5].map(
+            [1,2,3,4,5].map((item)=>(
 
-              (item)=>(
+              <button
 
-                <button
+                key={item}
 
-                  key={item}
+                type="button"
 
-                  type="button"
+                onClick={()=>{
 
-                  onClick={()=>{
+                  onChange(item);
 
-                    onChange(
-                      item
-                    );
+                }}
 
-                  }}
+              >
 
-                >
+                <Star
 
-                  <Star
+                  className={`
 
-                    className={`
+                    h-8
 
-                      h-7
-
-                      w-7
+                    w-8
 
 
-                      ${
-                        Number(value) >= item
+                    ${
+                      Number(value) >= item
 
-                          ? "fill-current"
+                      ? "fill-current"
 
-                          : ""
+                      : ""
 
-                      }
-
-
-                      ${
-                        error
-
-                          ? "text-destructive"
-
-                          : ""
-
-                      }
-
-                    `}
-
-                  />
+                    }
 
 
-                </button>
+                    ${
+                      error
 
-              )
+                      ? "text-destructive"
 
-            )
+                      : ""
+
+                    }
+
+                  `}
+
+                />
+
+              </button>
+
+            ))
           }
 
 
         </div>
 
       );
-          case "FILE":
+
+
+
+
+
+
+
+
+
+    case "FILE":
 
       return (
 
-        <div
-          className="
-            space-y-4
-          "
-        >
+        <div className="space-y-4">
+
 
           <UploadButton
 
-  endpoint="formUploader"
+            endpoint="formUploader"
 
 
-  appearance={{
+            appearance={{
 
-  button:
-    "rounded-xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90",
+              button:
 
-}}
+                "rounded-xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90",
 
-
-
-  onUploadBegin={()=>{
-
-    setUploading(true);
-
-  }}
+            }}
 
 
-  onClientUploadComplete={(files)=>{
+            onUploadBegin={()=>{
+
+              setUploading(true);
+
+            }}
 
 
-    setUploading(false);
+            onClientUploadComplete={(files)=>{
 
 
-    const file =
-      files[0];
+              setUploading(false);
 
 
-    onChange({
-
-      url:file.url,
-
-      fileName:file.name,
-
-      size:file.size,
-
-      type:file.type,
-
-    });
+              const file = files[0];
 
 
-  }}
+              onChange({
+
+                url:file.url,
+
+                fileName:file.name,
+
+                size:file.size,
+
+                type:file.type,
+
+              });
 
 
-  onUploadError={(error)=>{
+            }}
 
-    setUploading(false);
 
-    console.error(
-      "UploadThing Error:",
-      error
-    );
+            onUploadError={(error)=>{
 
-  }}
 
-/>
+              setUploading(false);
+
+
+              console.error(
+                "UploadThing Error:",
+                error
+              );
+
+
+            }}
+
+          />
+
 
 
 
@@ -828,6 +778,7 @@ export function PublicFieldRenderer({
             uploading && (
 
               <div
+
                 className="
                   flex
                   items-center
@@ -835,6 +786,7 @@ export function PublicFieldRenderer({
                   text-sm
                   text-muted-foreground
                 "
+
               >
 
                 <Loader2
@@ -847,15 +799,12 @@ export function PublicFieldRenderer({
 
                 />
 
-
                 Uploading...
-
 
               </div>
 
             )
           }
-
 
 
 
@@ -878,6 +827,7 @@ export function PublicFieldRenderer({
             && (
 
               <div
+
                 className="
                   flex
                   items-center
@@ -887,8 +837,8 @@ export function PublicFieldRenderer({
                   bg-muted/30
                   p-4
                 "
-              >
 
+              >
 
                 <FileText
 
@@ -900,46 +850,59 @@ export function PublicFieldRenderer({
 
                 />
 
-
-
-
-                <div>
+                <div className="min-w-0">
 
                   <p
+
                     className="
+                      truncate
                       text-sm
                       font-medium
                     "
+
                   >
 
                     {
                       String(
+
                         (
+
                           value as {
+
                             fileName?:string;
+
                           }
+
                         ).fileName ?? ""
+
                       )
                     }
 
                   </p>
 
 
-
                   <p
+
                     className="
                       text-xs
                       text-muted-foreground
                     "
+
                   >
 
                     {
                       String(
+
                         (
+
                           value as {
+
                             type?:string;
+
                           }
+
                         ).type ?? ""
+
                       )
                     }
 
@@ -955,10 +918,11 @@ export function PublicFieldRenderer({
           }
 
 
-
         </div>
 
       );
+
+
 
 
 

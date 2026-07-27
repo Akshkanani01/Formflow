@@ -56,11 +56,14 @@ type PreviewField = {
 
 
 
+
+
 export default async function PreviewPage({
 
   params,
 
 }: PreviewPageProps) {
+
 
 
 
@@ -154,15 +157,14 @@ export default async function PreviewPage({
 
       },
 
-
       orderBy: {
 
         position: "asc",
 
       },
 
-
     });
+
 
 
 
@@ -176,37 +178,15 @@ export default async function PreviewPage({
 
       (field: PreviewField) => ({
 
+        id: field.id,
 
+        type: field.type,
 
-        id:
+        label: field.label,
 
-          field.id,
+        placeholder: field.placeholder,
 
-
-
-        type:
-
-          field.type,
-
-
-
-        label:
-
-          field.label,
-
-
-
-        placeholder:
-
-          field.placeholder,
-
-
-
-        required:
-
-          field.required,
-
-
+        required: field.required,
 
         settings:
 
@@ -215,8 +195,6 @@ export default async function PreviewPage({
           typeof field.settings === "object" &&
 
           !Array.isArray(field.settings)
-
-
 
             ? field.settings as {
 
@@ -228,11 +206,7 @@ export default async function PreviewPage({
 
               }
 
-
-
             : undefined,
-
-
 
       })
 
@@ -245,31 +219,50 @@ export default async function PreviewPage({
 
 
 
-
   return (
+
 
     <main
 
       className="
         min-h-screen
+
         bg-muted/20
-        px-6
-        py-10
+
+        px-4
+
+        py-6
+
+        sm:px-6
+
+        sm:py-10
       "
 
     >
 
 
 
+
+
+
+
+      {/* Top Actions */}
+
       <div
 
         className="
           mx-auto
-          mb-6
+          mb-5
+
           flex
           max-w-3xl
-          items-center
-          justify-between
+
+          flex-col
+          gap-3
+
+          sm:flex-row
+          sm:items-center
+          sm:justify-between
         "
 
       >
@@ -280,6 +273,12 @@ export default async function PreviewPage({
 
           href={`/dashboard/forms/${form.id}/builder`}
 
+          className="
+            w-full
+
+            sm:w-auto
+          "
+
         >
 
           <Button
@@ -287,6 +286,12 @@ export default async function PreviewPage({
             variant="outline"
 
             size="sm"
+
+            className="
+              w-full
+
+              sm:w-auto
+            "
 
           >
 
@@ -301,6 +306,7 @@ export default async function PreviewPage({
             />
 
             Back to Builder
+
 
           </Button>
 
@@ -320,6 +326,8 @@ export default async function PreviewPage({
         />
 
 
+
+
       </div>
 
 
@@ -330,19 +338,36 @@ export default async function PreviewPage({
 
 
 
+      {/* Form Card */}
+
       <div
 
         className="
           mx-auto
+
           max-w-3xl
-          rounded-3xl
+
+          rounded-2xl
+
           border
+
           bg-background
-          p-8
+
+          p-5
+
           shadow-sm
+
+          sm:rounded-3xl
+
+          sm:p-8
         "
 
       >
+
+
+
+
+
 
 
 
@@ -350,21 +375,31 @@ export default async function PreviewPage({
 
           className="
             border-b
-            pb-6
+
+            pb-5
+
+            sm:pb-6
           "
 
         >
 
+
           <h1
 
             className="
-              text-3xl
+              break-words
+
+              text-2xl
+
               font-bold
+
+              sm:text-3xl
             "
 
           >
 
             {form.title}
+
 
           </h1>
 
@@ -372,22 +407,160 @@ export default async function PreviewPage({
 
 
 
-          {form.description && (
 
-            <p
 
-              className="
-                mt-3
-                text-muted-foreground
-              "
+          {
+            form.description && (
 
-            >
+              <p
 
-              {form.description}
+                className="
+                  mt-3
 
-            </p>
+                  text-sm
 
-          )}
+                  text-muted-foreground
+
+                  sm:text-base
+                "
+
+              >
+
+                {form.description}
+
+
+              </p>
+
+            )
+          }
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+        <div
+
+          className="
+            mt-6
+
+            space-y-6
+
+            sm:mt-8
+
+            sm:space-y-8
+          "
+
+        >
+
+
+
+          {
+            fields.map(
+
+              (field: PreviewField) => (
+
+
+                <div
+
+                  key={field.id}
+
+                  className="
+                    space-y-2
+                  "
+
+                >
+
+
+
+
+                  <label
+
+                    className="
+                      text-sm
+
+                      font-semibold
+                    "
+
+                  >
+
+                    {field.label}
+
+
+
+                    {
+                      field.required && (
+
+                        <span
+
+                          className="
+                            ml-1
+
+                            text-destructive
+                          "
+
+                        >
+
+                          *
+
+                        </span>
+
+                      )
+                    }
+
+
+                  </label>
+
+
+
+
+
+
+
+
+                  <FormFieldPreview
+
+                    field={{
+
+                      type: field.type,
+
+                      label: field.label,
+
+                      placeholder: field.placeholder,
+
+                      required: field.required,
+
+                      settings:
+
+                        submitFields.find(
+
+                          (item) =>
+
+                            item.id === field.id
+
+                        )?.settings,
+
+                    }}
+
+                  />
+
+
+
+                </div>
+
+
+              )
+
+            )
+          }
+
 
 
         </div>
@@ -404,153 +577,22 @@ export default async function PreviewPage({
 
           className="
             mt-8
-            space-y-8
-          "
 
-        >
-
-
-
-          {fields.map(
-
-            (field: PreviewField) => (
-
-
-              <div
-
-                key={field.id}
-
-                className="
-                  space-y-3
-                "
-
-              >
-
-
-
-                <label
-
-                  className="
-                    text-sm
-                    font-semibold
-                  "
-
-                >
-
-                  {field.label}
-
-
-
-                  {field.required && (
-
-                    <span
-
-                      className="
-                        ml-1
-                        text-destructive
-                      "
-
-                    >
-
-                      *
-
-                    </span>
-
-                  )}
-
-
-                </label>
-
-
-
-
-
-
-
-                <FormFieldPreview
-
-                  field={{
-
-
-                    type:
-
-                      field.type,
-
-
-
-                    label:
-
-                      field.label,
-
-
-
-                    placeholder:
-
-                      field.placeholder,
-
-
-
-                    required:
-
-                      field.required,
-
-
-
-                    settings:
-
-                      submitFields.find(
-
-                        (item) =>
-
-                          item.id === field.id
-
-                      )?.settings,
-
-
-
-                  }}
-
-
-                />
-
-
-
-              </div>
-
-
-            )
-
-          )}
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-        <div
-
-          className="
-            mt-10
             border-t
-            pt-6
+
+            pt-5
+
+            sm:mt-10
+
+            sm:pt-6
           "
 
         >
-
-
 
           <FormSubmitButton
 
 
             formId={form.id}
-
 
 
             fields={submitFields}
@@ -565,11 +607,15 @@ export default async function PreviewPage({
 
 
 
+
       </div>
 
 
 
+
+
     </main>
+
 
   );
 

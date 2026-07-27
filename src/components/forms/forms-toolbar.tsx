@@ -15,25 +15,43 @@ import {
 import { Search } from "lucide-react";
 
 
+
 const FormStatus = {
+
   DRAFT: "DRAFT",
+
   PUBLISHED: "PUBLISHED",
+
   ARCHIVED: "ARCHIVED",
+
 } as const;
 
 
 
+
+
 type FormsToolbarProps = {
+
   search: string;
+
   status: string;
+
 };
 
 
 
+
+
+
+
 export function FormsToolbar({
+
   search,
+
   status,
+
 }: FormsToolbarProps) {
+
 
 
   const router = useRouter();
@@ -41,6 +59,7 @@ export function FormsToolbar({
   const pathname = usePathname();
 
   const searchParams = useSearchParams();
+
 
 
 
@@ -68,6 +87,9 @@ export function FormsToolbar({
 
 
 
+
+
+
   useEffect(() => {
 
     setSearchValue(search);
@@ -89,32 +111,51 @@ export function FormsToolbar({
 
 
 
+
+
   useEffect(() => {
 
 
     const timeout = setTimeout(() => {
 
 
+
       const params =
+
         new URLSearchParams(
+
           currentParams
+
         );
+
 
 
 
 
       if (searchValue.trim()) {
 
+
         params.set(
+
           "search",
+
           searchValue.trim()
+
         );
+
 
       } else {
 
-        params.delete("search");
+
+        params.delete(
+
+          "search"
+
+        );
+
 
       }
+
 
 
 
@@ -123,16 +164,28 @@ export function FormsToolbar({
 
       if (statusValue) {
 
+
         params.set(
+
           "status",
+
           statusValue
+
         );
+
 
       } else {
 
-        params.delete("status");
+
+        params.delete(
+
+          "status"
+
+        );
+
 
       }
+
 
 
 
@@ -146,16 +199,23 @@ export function FormsToolbar({
 
 
 
+
       const query =
+
         params.toString();
 
 
 
 
 
+
+
       const nextUrl =
+
         query
+
           ? `${pathname}?${query}`
+
           : pathname;
 
 
@@ -163,12 +223,21 @@ export function FormsToolbar({
 
 
 
+
+
       const currentUrl =
+
         `${pathname}${
+
           currentParams
+
             ? `?${currentParams}`
+
             : ""
+
         }`;
+
+
 
 
 
@@ -186,15 +255,21 @@ export function FormsToolbar({
 
 
 
+
       startTransition(() => {
 
+
         router.replace(nextUrl);
+
 
       });
 
 
 
-    }, 300);
+
+
+    },300);
+
 
 
 
@@ -202,20 +277,31 @@ export function FormsToolbar({
 
     return () => {
 
+
       clearTimeout(timeout);
+
 
     };
 
 
 
   }, [
+
     currentParams,
+
     pathname,
+
     router,
+
     searchValue,
+
     startTransition,
+
     statusValue,
+
   ]);
+
+
 
 
 
@@ -225,76 +311,122 @@ export function FormsToolbar({
 
   return (
 
+
     <div
+
       className="
         flex
         flex-col
-        gap-4
-        rounded-xl
+        gap-3
+
+        rounded-2xl
         border
         bg-card
+
         p-4
+
+        sm:p-5
+
         lg:flex-row
         lg:items-center
-        lg:justify-between
       "
+
     >
 
 
 
+
+
+
+
+      {/* Search */}
+
+
       <div
+
         className="
           relative
-          flex-1
+          w-full
+          lg:flex-1
         "
+
       >
 
 
 
         <Search
+
           className="
             pointer-events-none
             absolute
             left-3
             top-1/2
+
             h-4
             w-4
+
             -translate-y-1/2
+
             text-muted-foreground
           "
+
         />
+
 
 
 
 
         <input
 
+
           type="search"
+
 
           value={searchValue}
 
+
           onChange={(e) =>
+
             setSearchValue(
+
               e.target.value
+
             )
+
           }
+
+
 
           placeholder="Search forms..."
 
+
+
           className="
-            h-10
+            h-11
+
             w-full
-            rounded-lg
+
+            rounded-xl
+
             border
+
             bg-background
+
             pl-10
+
             pr-4
+
             text-sm
+
             outline-none
+
             transition
+
             focus:ring-2
+
             focus:ring-primary
           "
+
 
         />
 
@@ -307,24 +439,48 @@ export function FormsToolbar({
 
 
 
+
+
+      {/* Status */}
+
+
       <select
+
 
         value={statusValue}
 
+
+
         onChange={(e) =>
+
           setStatusValue(
+
             e.target.value
+
           )
+
         }
 
+
+
         className="
-          h-10
-          rounded-lg
+          h-11
+
+          w-full
+
+          rounded-xl
+
           border
+
           bg-background
+
           px-3
+
           text-sm
+
+          lg:w-44
         "
+
 
       >
 
@@ -335,6 +491,7 @@ export function FormsToolbar({
           All Status
 
         </option>
+
 
 
 
@@ -367,13 +524,17 @@ export function FormsToolbar({
 
 
 
+
+
       </select>
 
 
 
 
 
+
     </div>
+
 
   );
 

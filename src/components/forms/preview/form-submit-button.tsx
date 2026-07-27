@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/button";
 
 
+
 type FormField = {
 
   id: string;
@@ -39,6 +40,7 @@ type FormField = {
 
 
 
+
 type FormSubmitButtonProps = {
 
   formId: string;
@@ -62,169 +64,15 @@ export function FormSubmitButton({
 }: FormSubmitButtonProps) {
 
 
-
-  const [values,setValues] =
-    useState<Record<string,unknown>>({});
-
-
-
-  const [errors,setErrors] =
-    useState<Record<string,string>>({});
-
-
-
   const [loading,setLoading] =
+
     useState(false);
 
 
 
   const [success,setSuccess] =
+
     useState(false);
-
-
-
-
-
-
-
-  function updateValue(
-    fieldId:string,
-    value:unknown
-  ){
-
-    setValues((previous)=>({
-
-      ...previous,
-
-      [fieldId]:
-        value,
-
-    }));
-
-  }
-
-
-
-
-
-
-
-
-  function validate(){
-
-    const validationErrors:
-      Record<string,string> = {};
-
-
-
-    fields.forEach((field)=>{
-
-
-      const value =
-        values[field.id];
-
-
-
-      if(
-        field.required &&
-        (
-          value === undefined ||
-          value === "" ||
-          value === false
-        )
-      ){
-
-        validationErrors[field.id] =
-          `${field.label} is required`;
-
-        return;
-
-      }
-
-
-
-
-
-      if(
-        field.type === "EMAIL" &&
-        value
-      ){
-
-        const email =
-          String(value);
-
-
-
-        if(
-          !email.includes("@")
-        ){
-
-          validationErrors[field.id] =
-            "Enter valid email";
-
-        }
-
-      }
-
-
-
-
-
-
-      if(
-        field.type === "NUMBER" &&
-        value
-      ){
-
-        const number =
-          Number(value);
-
-
-
-        if(
-          field.settings?.min !== undefined &&
-          number < field.settings.min
-        ){
-
-          validationErrors[field.id] =
-            `Minimum value is ${field.settings.min}`;
-
-        }
-
-
-
-
-        if(
-          field.settings?.max !== undefined &&
-          number > field.settings.max
-        ){
-
-          validationErrors[field.id] =
-            `Maximum value is ${field.settings.max}`;
-
-        }
-
-
-      }
-
-
-    });
-
-
-
-
-    setErrors(
-      validationErrors
-    );
-
-
-
-    return (
-      Object.keys(validationErrors).length === 0
-    );
-
-  }
-
 
 
 
@@ -236,21 +84,7 @@ export function FormSubmitButton({
   async function handleSubmit(){
 
 
-    const valid =
-      validate();
-
-
-
-    if(!valid){
-
-      return;
-
-    }
-
-
-
     setLoading(true);
-
 
 
 
@@ -262,17 +96,17 @@ export function FormSubmitButton({
         (field)=>({
 
           fieldId:
+
             field.id,
 
 
           value:
-            values[field.id] ?? null,
+
+            null,
 
         })
 
       );
-
-
 
 
 
@@ -285,7 +119,6 @@ export function FormSubmitButton({
       answers,
 
     });
-
 
 
 
@@ -305,7 +138,6 @@ export function FormSubmitButton({
 
 
 
-
   if(success){
 
     return (
@@ -313,12 +145,16 @@ export function FormSubmitButton({
       <div
 
         className="
-          rounded-lg
+          rounded-xl
           border
           bg-emerald-50
           p-4
+          text-center
           text-sm
           text-emerald-700
+
+          dark:bg-emerald-950/20
+          dark:text-emerald-400
         "
 
       >
@@ -340,215 +176,34 @@ export function FormSubmitButton({
 
   return (
 
-    <div
+    <Button
+
+      type="button"
+
+      disabled={loading}
+
+      onClick={handleSubmit}
 
       className="
-        space-y-8
+        h-12
+        w-full
+        rounded-xl
+        text-sm
+        font-semibold
       "
 
     >
 
+      {
+        loading
 
+          ? "Submitting..."
 
-      {fields.map(
+          : "Submit"
+      }
 
-        (field)=>(
 
-          <div
-
-            key={field.id}
-
-            className="
-              space-y-2
-            "
-
-          >
-
-
-
-
-
-            {field.type === "TEXT" && (
-
-              <input
-
-                value={
-                  String(
-                    values[field.id] ?? ""
-                  )
-                }
-
-
-                onChange={(event)=>
-
-                  updateValue(
-                    field.id,
-                    event.target.value
-                  )
-
-                }
-
-
-                placeholder={
-                  field.placeholder ?? ""
-                }
-
-
-                className="
-                  h-11
-                  w-full
-                  rounded-lg
-                  border
-                  px-3
-                "
-
-              />
-
-            )}
-
-
-
-
-
-
-
-            {field.type === "EMAIL" && (
-
-              <input
-
-                type="email"
-
-                value={
-                  String(
-                    values[field.id] ?? ""
-                  )
-                }
-
-
-                onChange={(event)=>
-
-                  updateValue(
-                    field.id,
-                    event.target.value
-                  )
-
-                }
-
-
-                className="
-                  h-11
-                  w-full
-                  rounded-lg
-                  border
-                  px-3
-                "
-
-              />
-
-            )}
-
-
-
-
-
-
-
-            {field.type === "NUMBER" && (
-
-              <input
-
-                type="number"
-
-                value={
-                  String(
-                    values[field.id] ?? ""
-                  )
-                }
-
-
-                onChange={(event)=>
-
-                  updateValue(
-                    field.id,
-                    event.target.value
-                  )
-
-                }
-
-
-                className="
-                  h-11
-                  w-full
-                  rounded-lg
-                  border
-                  px-3
-                "
-
-              />
-
-            )}
-
-
-
-
-
-
-
-
-            {errors[field.id] && (
-
-              <p
-
-                className="
-                  text-xs
-                  text-destructive
-                "
-
-              >
-
-                {errors[field.id]}
-
-              </p>
-
-            )}
-
-
-
-
-
-          </div>
-
-        )
-
-      )}
-
-
-
-
-
-
-
-      <Button
-
-        type="button"
-
-        disabled={loading}
-
-        onClick={handleSubmit}
-
-      >
-
-        {
-          loading
-            ? "Submitting..."
-            : "Submit"
-        }
-
-      </Button>
-
-
-
-    </div>
+    </Button>
 
   );
 

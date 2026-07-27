@@ -31,6 +31,7 @@ import {
 
 
 
+
 const FormStatus = {
 
   DRAFT: "DRAFT",
@@ -70,11 +71,13 @@ type FormsPageProps = {
 
 
 
+
 export default async function FormsPage({
 
   searchParams,
 
 }: FormsPageProps) {
+
 
 
 
@@ -92,11 +95,13 @@ export default async function FormsPage({
 
 
 
+
   if (!session) {
 
     redirect("/login");
 
   }
+
 
 
 
@@ -131,10 +136,10 @@ export default async function FormsPage({
 
 
 
+
   const params =
 
     await searchParams;
-
 
 
 
@@ -154,7 +159,6 @@ export default async function FormsPage({
 
 
 
-
   const status =
 
     params.status
@@ -162,7 +166,6 @@ export default async function FormsPage({
       ||
 
     undefined;
-
 
 
 
@@ -182,6 +185,7 @@ export default async function FormsPage({
       1
 
     );
+
 
 
 
@@ -215,18 +219,36 @@ export default async function FormsPage({
 
 
 
+
+
   return (
 
-    <div className="space-y-8">
+
+    <div
+
+      className="
+        space-y-6
+        sm:space-y-8
+      "
+
+    >
 
 
+
+
+
+
+
+
+      {/* Header */}
 
       <div
 
         className="
           flex
           flex-col
-          gap-6
+          gap-5
+
           lg:flex-row
           lg:items-center
           lg:justify-between
@@ -235,15 +257,25 @@ export default async function FormsPage({
       >
 
 
-        <div>
+
+        <div
+
+          className="
+            min-w-0
+          "
+
+        >
+
 
 
           <h1
 
             className="
-              text-3xl
+              text-2xl
               font-bold
               tracking-tight
+
+              sm:text-3xl
             "
 
           >
@@ -255,11 +287,16 @@ export default async function FormsPage({
 
 
 
+
           <p
 
             className="
               mt-2
+              max-w-xl
+              text-sm
               text-muted-foreground
+
+              sm:text-base
             "
 
           >
@@ -276,7 +313,24 @@ export default async function FormsPage({
 
 
 
-        <CreateFormButton />
+
+
+
+        <div
+
+          className="
+            w-full
+
+            sm:w-auto
+          "
+
+        >
+
+          <CreateFormButton />
+
+        </div>
+
+
 
 
 
@@ -289,13 +343,28 @@ export default async function FormsPage({
 
 
 
-      <FormsToolbar
 
-        search={search ?? ""}
+      {/* Toolbar */}
 
-        status={status ?? ""}
+      <div
 
-      />
+        className="
+          w-full
+          overflow-hidden
+        "
+
+      >
+
+        <FormsToolbar
+
+          search={search ?? ""}
+
+          status={status ?? ""}
+
+        />
+
+
+      </div>
 
 
 
@@ -304,23 +373,42 @@ export default async function FormsPage({
 
 
 
-      <FormsList
 
-        forms={result.forms}
+      {/* Forms */}
 
-        page={result.page}
+      <div
 
-        total={result.total}
+        className="
+          min-w-0
+          overflow-hidden
+        "
 
-        totalPages={result.totalPages}
+      >
 
-        pageSize={result.pageSize}
+        <FormsList
 
-      />
+          forms={result.forms}
+
+          page={result.page}
+
+          total={result.total}
+
+          totalPages={result.totalPages}
+
+          pageSize={result.pageSize}
+
+        />
+
+      </div>
+
+
+
+
 
 
 
     </div>
+
 
   );
 

@@ -37,6 +37,9 @@ type FormFieldPreviewProps = {
 
 
 
+
+
+
 export function FormFieldPreview({
 
   field,
@@ -47,24 +50,30 @@ export function FormFieldPreview({
 
 
 
+
   const options =
+
     field.settings?.options ?? [];
+
+
+
+
 
 
 
   const inputClass = `
 
-    h-11
+    h-12
 
     w-full
 
-    rounded-lg
+    rounded-xl
 
     border
 
     bg-background
 
-    px-3
+    px-4
 
     text-sm
 
@@ -72,10 +81,15 @@ export function FormFieldPreview({
 
     transition
 
+    focus:ring-2
+
     ${
       error
+
         ? "border-destructive focus:ring-destructive"
-        : "focus:ring-2 focus:ring-primary"
+
+        : "focus:ring-primary"
+
     }
 
   `;
@@ -83,10 +97,20 @@ export function FormFieldPreview({
 
 
 
-  switch (field.type) {
+
+
+
+  switch(field.type){
+
 
 
     case "TEXT":
+
+    case "EMAIL":
+
+    case "PHONE":
+
+    case "NUMBER":
 
       return (
 
@@ -94,27 +118,65 @@ export function FormFieldPreview({
 
           <input
 
-            type="text"
+            type={
+
+              field.type === "EMAIL"
+
+                ? "email"
+
+                : field.type === "PHONE"
+
+                  ? "tel"
+
+                  : field.type === "NUMBER"
+
+                    ? "number"
+
+                    : "text"
+
+            }
+
+
+            min={field.settings?.min}
+
+
+            max={field.settings?.max}
+
 
             placeholder={
+
               field.placeholder ?? ""
+
             }
+
 
             className={inputClass}
 
+
           />
 
-          {error && (
 
-            <p className="text-xs text-destructive">
-              {error}
-            </p>
 
-          )}
+          {
+            error && (
+
+              <p className="text-xs text-destructive">
+
+                {error}
+
+              </p>
+
+            )
+          }
+
 
         </div>
 
       );
+
+
+
+
 
 
 
@@ -125,111 +187,73 @@ export function FormFieldPreview({
 
         <div className="space-y-2">
 
+
           <textarea
 
             rows={5}
 
             placeholder={
+
               field.placeholder ?? ""
+
             }
 
+
             className={`
+
+              min-h-32
+
               w-full
-              rounded-lg
+
+              rounded-xl
+
               border
+
               bg-background
-              p-3
+
+              p-4
+
               text-sm
+
               outline-none
+
+              transition
+
+              focus:ring-2
 
               ${
                 error
-                  ? "border-destructive"
-                  : ""
+
+                  ? "border-destructive focus:ring-destructive"
+
+                  : "focus:ring-primary"
+
               }
+
             `}
 
           />
 
 
-          {error && (
 
-            <p className="text-xs text-destructive">
-              {error}
-            </p>
+          {
+            error && (
 
-          )}
+              <p className="text-xs text-destructive">
+
+                {error}
+
+              </p>
+
+            )
+          }
+
 
         </div>
 
       );
 
 
-
-
-    case "EMAIL":
-
-      return (
-
-        <input
-
-          type="email"
-
-          placeholder="email@example.com"
-
-          className={inputClass}
-
-        />
-
-      );
-
-
-
-
-
-    case "PHONE":
-
-      return (
-
-        <input
-
-          type="tel"
-
-          placeholder="+91 Phone number"
-
-          className={inputClass}
-
-        />
-
-      );
-
-
-
-
-
-    case "NUMBER":
-
-      return (
-
-        <input
-
-          type="number"
-
-          min={
-            field.settings?.min
-          }
-
-          max={
-            field.settings?.max
-          }
-
-          placeholder="0"
-
-          className={inputClass}
-
-        />
-
-      );
 
 
 
@@ -256,6 +280,7 @@ export function FormFieldPreview({
 
 
 
+
     case "SELECT":
 
       return (
@@ -267,27 +292,37 @@ export function FormFieldPreview({
         >
 
           <option>
+
             Select option
+
           </option>
 
 
-          {options.map(
+          {
+            options.map(
 
-            (option,index)=>(
+              (option,index)=>(
 
-              <option
-                key={index}
-              >
-                {option}
-              </option>
+                <option
+
+                  key={index}
+
+                >
+
+                  {option}
+
+                </option>
+
+              )
 
             )
+          }
 
-          )}
 
         </select>
 
       );
+
 
 
 
@@ -302,42 +337,68 @@ export function FormFieldPreview({
 
         <div className="space-y-3">
 
-          {options.map(
 
-            (option,index)=>(
+          {
+            options.map(
 
-              <label
+              (option,index)=>(
 
-                key={index}
+                <label
 
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  text-sm
-                "
+                  key={index}
 
-              >
+                  className="
 
-                <input
+                    flex
 
-                  type="radio"
+                    min-h-11
 
-                  name={field.label}
+                    items-center
 
-                />
+                    gap-3
 
-                {option}
+                    rounded-lg
 
-              </label>
+                    border
+
+                    px-3
+
+                    text-sm
+
+                    cursor-pointer
+
+                  "
+
+                >
+
+                  <input
+
+                    type="radio"
+
+                    name={field.label}
+
+                    className="h-4 w-4"
+
+                  />
+
+
+                  {option}
+
+
+                </label>
+
+
+              )
 
             )
+          }
 
-          )}
 
         </div>
 
       );
+
+
 
 
 
@@ -351,40 +412,66 @@ export function FormFieldPreview({
 
         <div className="space-y-3">
 
-          {options.map(
 
-            (option,index)=>(
+          {
+            options.map(
 
-              <label
+              (option,index)=>(
 
-                key={index}
+                <label
 
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  text-sm
-                "
+                  key={index}
 
-              >
+                  className="
 
-                <input
+                    flex
 
-                  type="checkbox"
+                    min-h-11
 
-                />
+                    items-center
 
-                {option}
+                    gap-3
 
-              </label>
+                    rounded-lg
+
+                    border
+
+                    px-3
+
+                    text-sm
+
+                    cursor-pointer
+
+                  "
+
+                >
+
+                  <input
+
+                    type="checkbox"
+
+                    className="h-4 w-4"
+
+                  />
+
+
+                  {option}
+
+
+                </label>
+
+
+              )
 
             )
+          }
 
-          )}
 
         </div>
 
       );
+
+
 
 
 
@@ -397,35 +484,51 @@ export function FormFieldPreview({
       return (
 
         <div
+
           className="
+
             flex
+
+            flex-wrap
+
             gap-2
+
           "
+
         >
 
-          {[1,2,3,4,5].map(
+          {
+            [1,2,3,4,5].map(
 
-            (item)=>(
+              (item)=>(
 
-              <Star
+                <Star
 
-                key={item}
+                  key={item}
 
-                className="
-                  h-7
-                  w-7
-                  text-muted-foreground
-                "
+                  className="
 
-              />
+                    h-8
+
+                    w-8
+
+                    text-muted-foreground
+
+                  "
+
+                />
+
+              )
 
             )
+          }
 
-          )}
 
         </div>
 
       );
+
+
 
 
 
@@ -439,37 +542,62 @@ export function FormFieldPreview({
 
         <div className="space-y-2">
 
+
           <input
 
             type="file"
 
+
             className="
+
               w-full
-              rounded-lg
+
+              rounded-xl
+
               border
+
+              bg-background
+
               p-3
+
               text-sm
+
             "
 
           />
 
 
-          {field.settings?.maxSize && (
 
-            <p className="text-xs text-muted-foreground">
+          {
+            field.settings?.maxSize && (
 
-              Max size:
-              {" "}
-              {field.settings.maxSize}
-              MB
+              <p
 
-            </p>
+                className="
 
-          )}
+                  text-xs
+
+                  text-muted-foreground
+
+                "
+
+              >
+
+                Max size: {field.settings.maxSize} MB
+
+
+              </p>
+
+            )
+          }
+
+
 
         </div>
 
       );
+
+
 
 
 
@@ -482,13 +610,21 @@ export function FormFieldPreview({
       return (
 
         <div
+
           className="
-            rounded-lg
+
+            rounded-xl
+
             border
+
             p-4
+
             text-sm
+
             text-muted-foreground
+
           "
+
         >
 
           Unsupported field
