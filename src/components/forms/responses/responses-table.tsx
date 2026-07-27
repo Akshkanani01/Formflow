@@ -10,20 +10,17 @@ type ResponseTableProps = {
 
   formId:string;
 
-
   responses: {
 
     id:string;
 
     submittedAt:Date;
 
-
     answers: {
 
       id:string;
 
       value:unknown;
-
 
       field:{
 
@@ -67,8 +64,9 @@ export function ResponsesTable({
           border
           border-dashed
           bg-background
-          p-10
+          p-8
           text-center
+          sm:p-10
         "
       >
 
@@ -109,342 +107,444 @@ export function ResponsesTable({
 
 
 
+
+
   return (
 
-    <div
-      className="
-        overflow-hidden
-        rounded-2xl
-        border
-        bg-background
-      "
-    >
+    <>
 
-      <table
+      {/* Mobile Cards */}
+
+      <div
         className="
-          w-full
-          text-sm
+          space-y-4
+          lg:hidden
         "
       >
 
+        {
+          responses.map(
 
-        <thead
-          className="
-            border-b
-            bg-muted/40
-          "
-        >
-
-          <tr>
+            (response,index)=>(
 
 
-            <th
-              className="
-                px-5
-                py-4
-                text-left
-              "
-            >
+              <div
 
-              #
+                key={response.id}
 
-            </th>
+                className="
+                  rounded-2xl
+                  border
+                  bg-background
+                  p-5
+                  shadow-sm
+                "
+
+              >
 
 
 
-            <th
-              className="
-                px-5
-                py-4
-                text-left
-              "
-            >
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-between
+                  "
+                >
 
-              Submitted
+                  <p
+                    className="
+                      text-sm
+                      font-semibold
+                    "
+                  >
 
-            </th>
+                    Response #{index + 1}
 
-
-
-            <th
-              className="
-                px-5
-                py-4
-                text-left
-              "
-            >
-
-              Answers
-
-            </th>
+                  </p>
 
 
+                  <ResponseDialog
 
-            <th
-              className="
-                px-5
-                py-4
-                text-right
-              "
-            >
+                    formId={formId}
 
-              Action
+                    submissionId={
+                      response.id
+                    }
 
-            </th>
+                  />
 
 
-          </tr>
-
-
-        </thead>
+                </div>
 
 
 
 
 
 
-
-
-        <tbody>
-
-
-          {
-            responses.map(
-
-              (response,index)=>(
-
-
-                <tr
-
-                  key={response.id}
+                <p
 
                   className="
-                    border-b
-                    last:border-0
-                    hover:bg-muted/20
+                    mt-2
+                    text-xs
+                    text-muted-foreground
                   "
 
                 >
 
+                  {
+                    new Intl.DateTimeFormat(
+                      "en-IN",
+                      {
+                        day:"2-digit",
+                        month:"short",
+                        year:"numeric",
+                        hour:"2-digit",
+                        minute:"2-digit",
+                      }
+                    ).format(
+                      new Date(
+                        response.submittedAt
+                      )
+                    )
+                  }
 
 
-                  <td
+                </p>
+
+
+
+
+
+
+
+                <div
+
+                  className="
+                    mt-4
+                    space-y-3
+                  "
+
+                >
+
+                  {
+                    response.answers
+                    .slice(0,3)
+                    .map(
+
+                      (answer)=>(
+
+
+                        <div
+
+                          key={answer.id}
+
+                          className="
+                            rounded-xl
+                            bg-muted/30
+                            p-3
+                          "
+
+                        >
+
+
+                          <p
+                            className="
+                              text-xs
+                              font-medium
+                              text-muted-foreground
+                            "
+                          >
+
+                            {
+                              answer.field.label
+                            }
+
+                          </p>
+
+
+
+                          <p
+                            className="
+                              mt-1
+                              break-words
+                              text-sm
+                            "
+                          >
+
+                            {
+                              typeof answer.value === "string"
+
+                              ? answer.value
+
+                              : JSON.stringify(
+                                  answer.value
+                                )
+                            }
+
+                          </p>
+
+
+                        </div>
+
+
+                      )
+
+                    )
+                  }
+
+
+
+
+                  {
+                    response.answers.length > 3 && (
+
+                      <p
+                        className="
+                          text-xs
+                          text-muted-foreground
+                        "
+                      >
+
+                        +
+
+                        {
+                          response.answers.length - 3
+                        }
+
+                        {" "}
+                        more answers
+
+                      </p>
+
+                    )
+                  }
+
+
+                </div>
+
+
+              </div>
+
+
+            )
+
+          )
+        }
+
+
+      </div>
+
+
+
+
+
+
+
+
+
+      {/* Desktop Table */}
+
+      <div
+
+        className="
+          hidden
+          overflow-hidden
+          rounded-2xl
+          border
+          bg-background
+          lg:block
+        "
+
+      >
+
+        <table
+          className="
+            w-full
+            text-sm
+          "
+        >
+
+          <thead
+            className="
+              border-b
+              bg-muted/40
+            "
+          >
+
+            <tr>
+
+              <th className="px-5 py-4 text-left">
+                #
+              </th>
+
+
+              <th className="px-5 py-4 text-left">
+                Submitted
+              </th>
+
+
+              <th className="px-5 py-4 text-left">
+                Answers
+              </th>
+
+
+              <th className="px-5 py-4 text-right">
+                Action
+              </th>
+
+
+            </tr>
+
+          </thead>
+
+
+
+
+
+          <tbody>
+
+            {
+              responses.map(
+
+                (response,index)=>(
+
+
+                  <tr
+
+                    key={response.id}
+
                     className="
-                      px-5
-                      py-4
-                      font-medium
+                      border-b
+                      last:border-0
+                      hover:bg-muted/20
                     "
+
                   >
 
-                    {index + 1}
 
-                  </td>
+                    <td className="px-5 py-4 font-medium">
 
+                      {index + 1}
 
-
-
-
-
-
-                  <td
-                    className="
-                      px-5
-                      py-4
-                      text-muted-foreground
-                    "
-                  >
-
-                    {
-  (() => {
-
-    const date =
-      new Date(
-        response.submittedAt
-      );
-
-
-    if (
-      Number.isNaN(
-        date.getTime()
-      )
-    ) {
-      return "-";
-    }
-
-
-    return new Intl.DateTimeFormat(
-      "en-IN",
-      {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true,
-      }
-    ).format(date);
-
-
-  })()
-}
-
-                  </td>
+                    </td>
 
 
 
 
-
-
-
-                  <td
-                    className="
-                      max-w-md
-                      px-5
-                      py-4
-                    "
-                  >
-
-                    <div
-                      className="
-                        space-y-2
-                      "
-                    >
+                    <td className="px-5 py-4 text-muted-foreground">
 
                       {
-                        response.answers
-                        .slice(0,3)
-                        .map(
+                        new Intl.DateTimeFormat(
+                          "en-IN",
+                          {
+                            day:"2-digit",
+                            month:"2-digit",
+                            year:"numeric",
+                            hour:"2-digit",
+                            minute:"2-digit",
+                          }
+                        ).format(
+                          new Date(
+                            response.submittedAt
+                          )
+                        )
+                      }
 
-                          (answer)=>(
+                    </td>
 
-                            <div
 
-                              key={answer.id}
 
-                              className="
-                                truncate
-                              "
 
-                            >
 
-                              <span
-                                className="
-                                  font-medium
-                                "
+                    <td className="max-w-md px-5 py-4">
+
+                      <div className="space-y-2">
+
+                        {
+                          response.answers
+                          .slice(0,3)
+                          .map(
+
+                            (answer)=>(
+
+                              <div
+                                key={answer.id}
+                                className="truncate"
                               >
 
+                                <span className="font-medium">
+
+                                  {answer.field.label}:
+
+                                </span>
+
+                                {" "}
+
                                 {
-                                  answer.field.label
-                                }:
-
-                              </span>
-
-
-                              {" "}
-
-
-                              {
-
-                                typeof answer.value === "string"
+                                  typeof answer.value === "string"
 
                                   ? answer.value
 
                                   : JSON.stringify(
                                       answer.value
                                     )
+                                }
 
-                              }
 
+                              </div>
 
-                            </div>
+                            )
 
                           )
-
-                        )
-                      }
+                        }
 
 
+                      </div>
 
 
-                      {
-                        response.answers.length > 3 && (
-
-                          <span
-                            className="
-                              text-xs
-                              text-muted-foreground
-                            "
-                          >
-
-                            +
-
-                            {
-                              response.answers.length - 3
-                            }
-
-                            {" "}
-                            more answers
-
-                          </span>
-
-                        )
-                      }
-
-
-                    </div>
-
-
-                  </td>
+                    </td>
 
 
 
 
 
+                    <td className="px-5 py-4 text-right">
 
 
+                      <ResponseDialog
 
-                  <td
-                    className="
-                      px-5
-                      py-4
-                      text-right
-                    "
-                  >
+                        formId={formId}
 
-                    <ResponseDialog
+                        submissionId={
+                          response.id
+                        }
 
-                      formId={formId}
-
-                      submissionId={
-                        response.id
-                      }
-
-                    />
+                      />
 
 
-                  </td>
+                    </td>
 
 
+                  </tr>
 
 
-                </tr>
-
+                )
 
               )
-
-            )
-          }
+            }
 
 
-
-        </tbody>
-
-
-      </table>
+          </tbody>
 
 
-    </div>
+        </table>
+
+
+      </div>
+
+
+    </>
 
   );
 

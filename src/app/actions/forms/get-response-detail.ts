@@ -10,11 +10,13 @@ import { prisma } from "@/lib/prisma";
 
 type GetResponseDetailInput = {
 
-  formId:string;
+  formId: string;
 
-  submissionId:string;
+  submissionId: string;
 
 };
+
+
 
 
 
@@ -26,7 +28,7 @@ export async function getResponseDetail({
 
   submissionId,
 
-}:GetResponseDetailInput){
+}: GetResponseDetailInput) {
 
 
 
@@ -42,7 +44,7 @@ export async function getResponseDetail({
 
 
 
-  if(!session){
+  if (!session) {
 
     redirect("/login");
 
@@ -52,18 +54,21 @@ export async function getResponseDetail({
 
 
 
+
+
   const form =
     await prisma.form.findFirst({
 
-      where:{
+      where: {
 
-        id:formId,
+        id: formId,
 
-        workspace:{
 
-          members:{
+        workspace: {
 
-            some:{
+          members: {
+
+            some: {
 
               userId:
                 session.user.id,
@@ -77,11 +82,11 @@ export async function getResponseDetail({
       },
 
 
-      select:{
+      select: {
 
-        id:true,
+        id: true,
 
-        title:true,
+        title: true,
 
       },
 
@@ -91,13 +96,15 @@ export async function getResponseDetail({
 
 
 
-  if(!form){
+
+
+  if (!form) {
 
     return {
 
-      form:null,
+      form: null,
 
-      submission:null,
+      submission: null,
 
     };
 
@@ -112,30 +119,37 @@ export async function getResponseDetail({
   const submission =
     await prisma.formSubmission.findFirst({
 
-      where:{
+      where: {
 
-        id:submissionId,
+        id: submissionId,
 
-        formId:form.id,
+        formId: form.id,
 
       },
 
 
-      include:{
+      include: {
 
-        answers:{
+        answers: {
 
-          include:{
+          orderBy: {
 
-            field:{
+            id: "asc",
 
-              select:{
+          },
 
-                id:true,
 
-                label:true,
+          include: {
 
-                type:true,
+            field: {
+
+              select: {
+
+                id: true,
+
+                label: true,
+
+                type: true,
 
               },
 
@@ -148,6 +162,25 @@ export async function getResponseDetail({
       },
 
     });
+
+
+
+
+
+
+
+  if (!submission) {
+
+    return {
+
+      form,
+
+      submission: null,
+
+    };
+
+  }
+
 
 
 

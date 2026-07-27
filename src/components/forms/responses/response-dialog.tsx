@@ -1,10 +1,8 @@
 "use client";
 
-
 import {
   useState,
 } from "react";
-
 
 import {
   Loader2,
@@ -13,18 +11,13 @@ import {
   Download,
 } from "lucide-react";
 
-
 import {
   Button,
 } from "@/components/ui/button";
 
-
 import {
   getResponseDetail,
 } from "@/app/actions/forms/get-response-detail";
-
-
-
 
 
 
@@ -38,12 +31,9 @@ type ResponseDialogProps = {
 
 
 
-
-
 type ResponseData = Awaited<
   ReturnType<typeof getResponseDetail>
 >;
-
 
 
 
@@ -60,25 +50,16 @@ export function ResponseDialog({
 }:ResponseDialogProps){
 
 
-
   const [open,setOpen] =
-
     useState(false);
-
 
 
   const [loading,setLoading] =
-
     useState(false);
 
 
-
   const [data,setData] =
-
     useState<ResponseData | null>(null);
-
-
-
 
 
 
@@ -87,29 +68,23 @@ export function ResponseDialog({
   async function openDialog(){
 
 
-
     setOpen(true);
 
 
 
     if(data){
-
       return;
-
     }
 
 
 
-
     try{
-
 
       setLoading(true);
 
 
 
       const result =
-
         await getResponseDetail({
 
           formId,
@@ -126,15 +101,12 @@ export function ResponseDialog({
 
     }finally{
 
-
       setLoading(false);
-
 
     }
 
 
   }
-
 
 
 
@@ -143,9 +115,7 @@ export function ResponseDialog({
 
   function closeDialog(){
 
-
     setOpen(false);
-
 
   }
 
@@ -154,90 +124,60 @@ export function ResponseDialog({
 
 
 
-
-  function formatDate(
-
-    value:unknown
-
-  ){
-
+  function formatDate(value:unknown){
 
     if(!value){
-
       return "-";
-
     }
 
 
-
-
     const date =
-
       new Date(
-
         String(value)
-
       );
 
 
 
-
-
     if(
-
       Number.isNaN(
-
         date.getTime()
-
       )
-
     ){
-
       return "-";
-
     }
 
 
 
-
-
     return new Intl.DateTimeFormat(
-
       "en-IN",
-
       {
-
         day:"2-digit",
-
         month:"short",
-
         year:"numeric",
-
         hour:"2-digit",
-
         minute:"2-digit",
-
         hour12:true,
-
       }
-
     ).format(date);
 
-
   }
-    function renderAnswerValue(
 
-    value: unknown
 
-  ) {
+
+
+
+
+
+
+  function renderAnswerValue(
+    value:unknown
+  ){
 
 
 
     if(typeof value === "string"){
 
-
       return value;
-
 
     }
 
@@ -248,178 +188,129 @@ export function ResponseDialog({
 
 
     if(
-
       typeof value === "object"
-
       &&
-
       value !== null
-
       &&
-
       "fileName" in value
-
     ){
 
 
-
-      const file = value as {
-
-        url?:string;
-
-        fileName:string;
-
-        size:number;
-
-        type:string;
-
-      };
-
-
-
-
+      const file =
+        value as {
+          url?:string;
+          fileName:string;
+          size:number;
+          type:string;
+        };
 
 
 
       return (
 
         <div
-
           className="
-            rounded-2xl
+            rounded-xl
             border
             bg-background
-            p-5
+            p-4
           "
-
         >
 
-
-
           <div
-
             className="
               flex
-              items-center
-              justify-between
+              flex-col
               gap-4
+              sm:flex-row
+              sm:items-center
+              sm:justify-between
             "
-
           >
 
 
 
-
-
             <div
-
               className="
                 flex
                 min-w-0
                 items-center
                 gap-3
               "
-
             >
 
-
-
               <div
-
                 className="
                   flex
-                  h-12
-                  w-12
+                  h-11
+                  w-11
                   shrink-0
                   items-center
                   justify-center
-                  rounded-2xl
+                  rounded-xl
                   bg-primary/10
                 "
-
               >
 
                 <FileText
-
                   className="
-                    h-6
-                    w-6
+                    h-5
+                    w-5
                     text-primary
                   "
-
                 />
-
 
               </div>
 
 
 
 
-
-
               <div
-
                 className="
                   min-w-0
                 "
-
               >
 
-
                 <p
-
                   className="
                     truncate
+                    text-sm
                     font-medium
                   "
-
                 >
 
                   {file.fileName}
-
 
                 </p>
 
 
 
-
-
                 <p
-
                   className="
                     text-xs
                     text-muted-foreground
                   "
-
                 >
 
                   {file.type}
 
                   {" • "}
 
-
                   {
                     Math.round(
-
                       file.size / 1024
-
                     )
                   }
 
                   KB
 
-
                 </p>
-
 
 
               </div>
 
 
-
             </div>
-
-
 
 
 
@@ -431,13 +322,9 @@ export function ResponseDialog({
 
                 <a
 
-                  href={
-                    file.url
-                  }
+                  href={file.url}
 
-                  download={
-                    file.fileName
-                  }
+                  download={file.fileName}
 
                   target="_blank"
 
@@ -446,51 +333,41 @@ export function ResponseDialog({
                   className="
                     inline-flex
                     h-9
-                    shrink-0
                     items-center
+                    justify-center
                     rounded-xl
                     border
                     px-3
                     text-sm
                     font-medium
-                    transition
                     hover:bg-muted
                   "
 
                 >
 
-
                   <Download
-
                     className="
                       mr-2
                       h-4
                       w-4
                     "
-
                   />
-
 
                   Download
 
 
-
                 </a>
-
 
               )
             }
 
 
-
           </div>
-
 
 
         </div>
 
       );
-
 
     }
 
@@ -503,36 +380,54 @@ export function ResponseDialog({
     return (
 
       <pre
-
         className="
           whitespace-pre-wrap
+          break-words
           text-sm
         "
-
       >
 
         {
           JSON.stringify(
-
             value,
-
             null,
-
             2
-
           )
         }
-
 
       </pre>
 
     );
 
-
   }
-    return (
+
+
+
+
+
+
+
+  return (
 
     <>
+
+      <Button
+
+        size="sm"
+
+        variant="outline"
+
+        onClick={openDialog}
+
+      >
+
+        View
+
+      </Button>
+
+
+
+
 
       {
         open && (
@@ -547,8 +442,8 @@ export function ResponseDialog({
               items-center
               justify-center
               bg-black/50
-              backdrop-blur-md
-              p-6
+              p-3
+              sm:p-6
             "
 
             onClick={closeDialog}
@@ -561,25 +456,23 @@ export function ResponseDialog({
 
               className="
                 flex
-                max-h-[90vh]
+                max-h-[92vh]
                 w-full
                 max-w-4xl
                 flex-col
                 overflow-hidden
-                rounded-3xl
+                rounded-2xl
                 border
                 bg-background
                 shadow-2xl
+                sm:rounded-3xl
               "
 
-              onClick={(event)=>
-
-                event.stopPropagation()
-
+              onClick={(e)=>
+                e.stopPropagation()
               }
 
             >
-
 
 
 
@@ -590,51 +483,47 @@ export function ResponseDialog({
 
                 className="
                   flex
-                  items-center
+                  items-start
                   justify-between
+                  gap-4
                   border-b
-                  px-8
-                  py-6
+                  px-4
+                  py-4
+                  sm:px-8
+                  sm:py-6
                 "
 
               >
 
-
-                <div>
-
+                <div className="min-w-0">
 
                   <h2
-
                     className="
-                      text-2xl
+                      truncate
+                      text-xl
                       font-bold
+                      sm:text-2xl
                     "
-
                   >
 
                     Response Details
 
-
                   </h2>
-
-
 
 
                   {
                     data?.form && (
 
                       <p
-
                         className="
                           mt-1
+                          truncate
                           text-sm
                           text-muted-foreground
                         "
-
                       >
 
                         {data.form.title}
-
 
                       </p>
 
@@ -642,9 +531,7 @@ export function ResponseDialog({
                   }
 
 
-
                 </div>
-
 
 
 
@@ -661,21 +548,16 @@ export function ResponseDialog({
                 >
 
                   <X
-
                     className="
                       h-5
                       w-5
                     "
-
                   />
-
 
                 </Button>
 
 
-
               </div>
-
 
 
 
@@ -690,37 +572,32 @@ export function ResponseDialog({
                 className="
                   flex-1
                   overflow-y-auto
-                  p-8
+                  p-4
+                  sm:p-8
                 "
 
               >
-
 
 
                 {
                   loading && (
 
                     <div
-
                       className="
                         flex
                         h-60
                         items-center
                         justify-center
                       "
-
                     >
 
                       <Loader2
-
                         className="
                           h-8
                           w-8
                           animate-spin
                         "
-
                       />
-
 
                     </div>
 
@@ -733,73 +610,52 @@ export function ResponseDialog({
 
 
 
-
                 {
-                  !loading
-
-                  &&
-
-                  data?.submission
-
-                  && (
+                  !loading &&
+                  data?.submission && (
 
                     <div
-
                       className="
                         space-y-6
                       "
-
                     >
 
 
 
-                      {/* Submitted */}
-
                       <div
-
                         className="
                           rounded-2xl
                           border
                           bg-muted/20
-                          p-6
+                          p-4
+                          sm:p-6
                         "
-
                       >
 
                         <p
-
                           className="
                             text-xs
                             text-muted-foreground
                           "
-
                         >
 
                           Submitted At
 
-
                         </p>
 
 
-
-
                         <p
-
                           className="
                             mt-2
                             font-semibold
                           "
-
                         >
 
                           {
                             formatDate(
-
                               data.submission.submittedAt
-
                             )
                           }
-
 
                         </p>
 
@@ -812,31 +668,17 @@ export function ResponseDialog({
 
 
 
-
-
-                      {/* Answers */}
-
-                      <div
-
-                        className="
-                          space-y-4
-                        "
-
-                      >
-
+                      <div className="space-y-4">
 
 
                         <h3
-
                           className="
                             text-lg
                             font-semibold
                           "
-
                         >
 
                           Answers
-
 
                         </h3>
 
@@ -844,129 +686,95 @@ export function ResponseDialog({
 
 
 
-
-
                         {
                           data.submission.answers.map(
-  (answer: {
-    id: string;
-    fieldId: string;
-    value: unknown;
-    field?: {
-  id: string;
-  label: string;
-  type: string;
-} | null;
-  })=>(
 
-
+                            (answer)=>(
+                              
                               <div
 
-                                key={
-                                  answer.id
-                                }
+                                key={answer.id}
 
                                 className="
                                   rounded-2xl
                                   border
                                   bg-card
-                                  p-6
+                                  p-4
+                                  sm:p-6
                                 "
 
                               >
 
-
-
-
-
                                 <div
-
                                   className="
                                     flex
-                                    items-center
-                                    justify-between
-                                    gap-4
+                                    flex-col
+                                    gap-2
+                                    sm:flex-row
+                                    sm:items-center
+                                    sm:justify-between
                                   "
-
                                 >
 
-
-
                                   <p
-
                                     className="
                                       font-semibold
                                     "
-
                                   >
 
                                     {
-                                      answer.field?.label ?? "Unknown field"
+                                      answer.field?.label ??
+                                      "Unknown field"
                                     }
-
 
                                   </p>
 
 
 
-
-
                                   <span
-
                                     className="
+                                      w-fit
                                       rounded-full
                                       bg-muted
                                       px-3
                                       py-1
                                       text-xs
                                     "
-
                                   >
 
                                     {
                                       answer.field?.type ?? ""
                                     }
 
-
                                   </span>
 
 
-
                                 </div>
-
-
 
 
 
 
 
                                 <div
-
                                   className="
                                     mt-4
                                     rounded-xl
                                     bg-muted/30
-                                    p-4
+                                    p-3
+                                    sm:p-4
                                   "
-
                                 >
 
                                   {
                                     renderAnswerValue(
-
                                       answer.value
-
                                     )
                                   }
-
 
                                 </div>
 
 
-
-
                               </div>
-
 
                             )
 
@@ -974,17 +782,15 @@ export function ResponseDialog({
                         }
 
 
-
-
                       </div>
-
-
 
 
                     </div>
 
                   )
                 }
+
+
               </div>
 
 
@@ -994,7 +800,6 @@ export function ResponseDialog({
           </div>
 
         )
-
       }
 
 

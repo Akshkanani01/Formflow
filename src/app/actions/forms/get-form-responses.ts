@@ -7,23 +7,15 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 
-
 type GetFormResponsesInput = {
-
-  formId:string;
-
+  formId: string;
 };
 
 
 
-
-
 export async function getFormResponses({
-
   formId,
-
-}:GetFormResponsesInput){
-
+}: GetFormResponsesInput) {
 
 
   const session =
@@ -36,9 +28,7 @@ export async function getFormResponses({
 
 
 
-
-
-  if(!session){
+  if (!session) {
 
     redirect("/login");
 
@@ -47,22 +37,19 @@ export async function getFormResponses({
 
 
 
-
-
-
   const form =
     await prisma.form.findFirst({
 
-      where:{
+      where: {
 
-        id:formId,
+        id: formId,
 
 
-        workspace:{
+        workspace: {
 
-          members:{
+          members: {
 
-            some:{
+            some: {
 
               userId:
                 session.user.id,
@@ -76,12 +63,11 @@ export async function getFormResponses({
       },
 
 
-      select:{
+      select: {
 
-        id:true,
+        id: true,
 
-        title:true,
-
+        title: true,
 
       },
 
@@ -91,13 +77,15 @@ export async function getFormResponses({
 
 
 
+  if (!form) {
 
+    return {
 
-  if(!form){
+      form: null,
 
-    throw new Error(
-      "Form not found."
-    );
+      responses: [],
+
+    };
 
   }
 
@@ -110,16 +98,14 @@ export async function getFormResponses({
   const responses =
     await prisma.formSubmission.findMany({
 
-      where:{
+      where: {
 
-        formId:
-
-          form.id,
+        formId: form.id,
 
       },
 
 
-      orderBy:{
+      orderBy: {
 
         submittedAt:
           "desc",
@@ -127,21 +113,29 @@ export async function getFormResponses({
       },
 
 
-      include:{
+      include: {
 
-        answers:{
+        answers: {
 
-          include:{
+          orderBy: {
 
-            field:{
+            id:
+              "asc",
 
-              select:{
+          },
 
-                id:true,
 
-                label:true,
+          include: {
 
-                type:true,
+            field: {
+
+              select: {
+
+                id: true,
+
+                label: true,
+
+                type: true,
 
               },
 
@@ -164,7 +158,6 @@ export async function getFormResponses({
   return {
 
     form,
-
 
     responses,
 
