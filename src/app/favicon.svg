@@ -1,0 +1,48 @@
+<svg width="220" height="60" viewBox="0 0 220 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon -->
+  <g>
+    <rect x="5" y="8" width="42" height="42" rx="12" fill="url(#gradient)"></rect>
+
+    <!-- Form sheet -->
+    <path d="M18 18H34L39 23V42C39 43.1 38.1 44 37 44H18C16.9 44 16 43.1 16 42V20C16 18.9 16.9 18 18 18Z" fill="white"></path>
+
+    <path d="M33 18V24H39" fill="#6366F1"></path>
+
+    <!-- Input lines -->
+    <rect x="21" y="27" width="12" height="3" rx="1.5" fill="#1E293B"></rect>
+
+    <rect x="21" y="33" width="10" height="3" rx="1.5" fill="#1E293B"></rect>
+
+    <path d="M22 40L25 42L31 36" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+
+  </g>
+
+
+  <!-- Brand -->
+  <text x="58" y="39" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="700" fill="#0F172A">
+    Form
+  </text>
+
+
+  <text x="130" y="39" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="700" fill="url(#textGradient)">
+    flow
+  </text>
+
+
+
+  <defs>
+
+    <linearGradient id="gradient" x1="5" y1="8" x2="47" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C3AED"></stop>
+      <stop offset="1" stop-color="#2563EB"></stop>
+    </linearGradient>
+
+
+    <linearGradient id="textGradient" x1="130" y1="20" x2="190" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB"></stop>
+      <stop offset="1" stop-color="#7C3AED"></stop>
+    </linearGradient>
+
+  </defs>
+
+</svg>
