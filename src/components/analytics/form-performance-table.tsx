@@ -23,11 +23,43 @@ type FormPerformanceTableProps = {
 
 
 
+
+
 export default function FormPerformanceTable({
 
   data,
 
 }:FormPerformanceTableProps){
+
+
+
+  if(data.length === 0){
+
+    return (
+
+      <div
+
+        className="
+          rounded-2xl
+          border
+          border-dashed
+          p-8
+          text-center
+          text-sm
+          text-muted-foreground
+        "
+
+      >
+
+        No performance data available.
+
+      </div>
+
+    );
+
+  }
+
+
 
 
 
@@ -43,161 +75,263 @@ export default function FormPerformanceTable({
 
     >
 
-      <table
+      <div
 
         className="
-          w-full
-          text-sm
+          overflow-x-auto
         "
 
       >
 
-        <thead>
+        <table
 
-          <tr
+          className="
+            min-w-[650px]
+            w-full
+            text-sm
+          "
 
-            className="
-              border-b
-              bg-muted/30
-              text-left
-            "
-
-          >
-
-            <th className="px-5 py-4">
-
-              Form
-
-            </th>
+        >
 
 
-            <th className="px-5 py-4">
 
-              Views
+          <thead>
 
-            </th>
+            <tr
 
+              className="
+                border-b
+                bg-muted/30
+                text-left
+              "
 
-            <th className="px-5 py-4">
-
-              Responses
-
-            </th>
-
-
-            <th className="px-5 py-4">
-
-              Conversion
-
-            </th>
+            >
 
 
-          </tr>
+              <th
 
-        </thead>
+                className="
+                  whitespace-nowrap
+                  px-5
+                  py-4
+                  font-medium
+                "
+
+              >
+
+                Form
+
+              </th>
 
 
 
 
 
-        <tbody>
+              <th
 
-          {
-            data.map(
+                className="
+                  whitespace-nowrap
+                  px-5
+                  py-4
+                  font-medium
+                "
 
-              (form)=>(
+              >
 
-                <tr
+                Views
 
-                  key={
-                    form.id
-                  }
+              </th>
 
-                  className="
-                    border-b
-                    last:border-0
-                  "
 
-                >
 
-                  <td
+
+
+              <th
+
+                className="
+                  whitespace-nowrap
+                  px-5
+                  py-4
+                  font-medium
+                "
+
+              >
+
+                Responses
+
+              </th>
+
+
+
+
+
+              <th
+
+                className="
+                  whitespace-nowrap
+                  px-5
+                  py-4
+                  font-medium
+                "
+
+              >
+
+                Conversion
+
+              </th>
+
+
+
+            </tr>
+
+
+          </thead>
+
+
+
+
+
+
+
+          <tbody>
+
+
+            {
+              data.map(
+
+                (form)=>(
+
+
+                  <tr
+
+                    key={form.id}
 
                     className="
-                      px-5
-                      py-4
-                      font-medium
+                      border-b
+                      last:border-0
+                      transition-colors
+                      hover:bg-muted/20
                     "
 
                   >
 
-                    {form.title}
-
-                  </td>
 
 
 
+                    <td
 
-                  <td
+                      className="
+                        max-w-[260px]
+                        px-5
+                        py-4
+                        font-medium
+                      "
 
-                    className="
-                      px-5
-                      py-4
-                    "
+                    >
 
-                  >
+                      <span
 
-                    {form.views}
+                        className="
+                          block
+                          truncate
+                        "
 
-                  </td>
+                      >
+
+                        {form.title}
+
+                      </span>
 
 
-
-
-
-                  <td
-
-                    className="
-                      px-5
-                      py-4
-                    "
-
-                  >
-
-                    {form.responses}
-
-                  </td>
+                    </td>
 
 
 
 
 
-                  <td
-
-                    className="
-                      px-5
-                      py-4
-                      font-semibold
-                    "
-
-                  >
-
-                    {form.conversion}%
-
-                  </td>
 
 
-                </tr>
+                    <td
+
+                      className="
+                        px-5
+                        py-4
+                      "
+
+                    >
+
+                      {form.views}
+
+
+                    </td>
+
+
+
+
+
+
+
+
+                    <td
+
+                      className="
+                        px-5
+                        py-4
+                      "
+
+                    >
+
+                      {form.responses}
+
+
+                    </td>
+
+
+
+
+
+
+
+
+
+                    <td
+
+                      className="
+                        px-5
+                        py-4
+                        font-semibold
+                      "
+
+                    >
+
+                      {form.conversion}%
+
+
+                    </td>
+
+
+
+
+
+                  </tr>
+
+
+                )
 
               )
-
-            )
-          }
+            }
 
 
-        </tbody>
+
+          </tbody>
 
 
-      </table>
+
+
+        </table>
+
+
+      </div>
 
 
     </div>

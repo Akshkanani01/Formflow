@@ -21,6 +21,7 @@ import FormPerformanceTable from "@/components/analytics/form-performance-table"
 
 
 
+
 export default async function AnalyticsPage(){
 
 
@@ -28,7 +29,6 @@ export default async function AnalyticsPage(){
   const data =
 
     await getAnalytics();
-
 
 
 
@@ -88,13 +88,18 @@ export default async function AnalyticsPage(){
 
 
 
+
+
   return (
 
     <main
 
       className="
-        space-y-8
-        p-6
+        space-y-6
+        p-4
+
+        sm:space-y-8
+        sm:p-6
       "
 
     >
@@ -103,14 +108,22 @@ export default async function AnalyticsPage(){
 
 
 
+
+
+
+      {/* Header */}
+
       <section
 
         className="
-          rounded-3xl
+          rounded-2xl
           border
           bg-background
-          p-8
+          p-5
           shadow-sm
+
+          sm:rounded-3xl
+          sm:p-8
         "
 
       >
@@ -118,8 +131,10 @@ export default async function AnalyticsPage(){
         <h1
 
           className="
-            text-3xl
+            text-2xl
             font-bold
+
+            sm:text-3xl
           "
 
         >
@@ -129,11 +144,15 @@ export default async function AnalyticsPage(){
         </h1>
 
 
+
         <p
 
           className="
             mt-2
+            text-sm
             text-muted-foreground
+
+            sm:text-base
           "
 
         >
@@ -153,34 +172,46 @@ export default async function AnalyticsPage(){
 
 
 
+      {/* Stats */}
+
       <section
 
         className="
           grid
-          gap-6
+          gap-4
+
+          sm:gap-6
+
           md:grid-cols-2
+
           xl:grid-cols-4
         "
 
       >
+
 
         {
           stats.map(
 
             (item)=>(
 
+
               <div
 
                 key={item.title}
 
                 className="
-                  rounded-3xl
+                  rounded-2xl
                   border
                   bg-background
-                  p-6
+                  p-5
+
+                  sm:rounded-3xl
+                  sm:p-6
                 "
 
               >
+
 
                 <div
 
@@ -188,9 +219,11 @@ export default async function AnalyticsPage(){
                     flex
                     items-center
                     justify-between
+                    gap-3
                   "
 
                 >
+
 
                   <p
 
@@ -206,11 +239,13 @@ export default async function AnalyticsPage(){
                   </p>
 
 
+
                   <item.icon
 
                     className="
                       h-5
                       w-5
+                      shrink-0
                       text-primary
                     "
 
@@ -221,12 +256,17 @@ export default async function AnalyticsPage(){
 
 
 
+
+
                 <p
 
                   className="
-                    mt-5
-                    text-4xl
+                    mt-4
+                    text-3xl
                     font-bold
+
+                    sm:mt-5
+                    sm:text-4xl
                   "
 
                 >
@@ -236,7 +276,9 @@ export default async function AnalyticsPage(){
                 </p>
 
 
+
               </div>
+
 
             )
 
@@ -254,13 +296,19 @@ export default async function AnalyticsPage(){
 
 
 
+      {/* Response Chart */}
+
       <section
 
         className="
-          rounded-3xl
+          overflow-hidden
+          rounded-2xl
           border
           bg-background
-          p-8
+          p-5
+
+          sm:rounded-3xl
+          sm:p-8
         "
 
       >
@@ -268,8 +316,10 @@ export default async function AnalyticsPage(){
         <h2
 
           className="
-            text-xl
+            text-lg
             font-semibold
+
+            sm:text-xl
           "
 
         >
@@ -279,10 +329,16 @@ export default async function AnalyticsPage(){
         </h2>
 
 
+
+
         <div
 
           className="
-            mt-6
+            mt-5
+            min-h-[280px]
+
+            sm:mt-6
+            sm:min-h-[350px]
           "
 
         >
@@ -309,21 +365,30 @@ export default async function AnalyticsPage(){
 
 
 
+      {/* Performance */}
+
       <section
 
         className="
-          rounded-3xl
+          overflow-hidden
+          rounded-2xl
           border
           bg-background
-          p-8
+          p-5
+
+          sm:rounded-3xl
+          sm:p-8
         "
 
       >
 
+
         <div
 
           className="
-            mb-6
+            mb-5
+
+            sm:mb-6
           "
 
         >
@@ -331,8 +396,10 @@ export default async function AnalyticsPage(){
           <h2
 
             className="
-              text-xl
+              text-lg
               font-semibold
+
+              sm:text-xl
             "
 
           >
@@ -340,6 +407,7 @@ export default async function AnalyticsPage(){
             Form Performance
 
           </h2>
+
 
 
           <p
@@ -363,13 +431,24 @@ export default async function AnalyticsPage(){
 
 
 
-        <FormPerformanceTable
+        <div
 
-          data={
-            data.formPerformance
-          }
+          className="
+            overflow-x-auto
+          "
 
-        />
+        >
+
+          <FormPerformanceTable
+
+            data={
+              data.formPerformance
+            }
+
+          />
+
+
+        </div>
 
 
       </section>
@@ -382,13 +461,18 @@ export default async function AnalyticsPage(){
 
 
 
+      {/* Top Forms */}
+
       <section
 
         className="
-          rounded-3xl
+          rounded-2xl
           border
           bg-background
-          p-8
+          p-5
+
+          sm:rounded-3xl
+          sm:p-8
         "
 
       >
@@ -396,8 +480,10 @@ export default async function AnalyticsPage(){
         <h2
 
           className="
-            text-xl
+            text-lg
             font-semibold
+
+            sm:text-xl
           "
 
         >
@@ -405,6 +491,8 @@ export default async function AnalyticsPage(){
           Top Performing Forms
 
         </h2>
+
+
 
 
 
@@ -417,10 +505,12 @@ export default async function AnalyticsPage(){
 
         >
 
+
           {
             data.topForms.map(
 
               (form,index)=>(
+
 
                 <div
 
@@ -428,24 +518,36 @@ export default async function AnalyticsPage(){
 
                   className="
                     flex
-                    items-center
-                    justify-between
+                    flex-col
+                    gap-3
                     rounded-2xl
                     border
-                    p-5
+                    p-4
+
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                    sm:p-5
                   "
 
                 >
+
+
+
 
                   <div
 
                     className="
                       flex
+                      min-w-0
                       items-center
-                      gap-4
+                      gap-3
+
+                      sm:gap-4
                     "
 
                   >
+
 
                     <div
 
@@ -453,6 +555,7 @@ export default async function AnalyticsPage(){
                         flex
                         h-10
                         w-10
+                        shrink-0
                         items-center
                         justify-center
                         rounded-xl
@@ -462,12 +565,25 @@ export default async function AnalyticsPage(){
 
                     >
 
-                      {index+1}
+                      {index + 1}
 
                     </div>
 
 
-                    <span>
+
+
+
+                    <span
+
+                      className="
+                        truncate
+                        text-sm
+                        font-medium
+
+                        sm:text-base
+                      "
+
+                    >
 
                       {form.title}
 
@@ -475,6 +591,9 @@ export default async function AnalyticsPage(){
 
 
                   </div>
+
+
+
 
 
                   <span
@@ -491,7 +610,9 @@ export default async function AnalyticsPage(){
                   </span>
 
 
+
                 </div>
+
 
               )
 

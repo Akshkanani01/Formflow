@@ -26,11 +26,15 @@ import {
 type ResponseChartProps = {
 
   data:{
+
     date:string;
+
     responses:number;
+
   }[];
 
 };
+
 
 
 
@@ -51,11 +55,14 @@ export default function ResponseChart({
     <div
 
       className="
-        h-[350px]
+        h-[280px]
         w-full
+
+        sm:h-[350px]
       "
 
     >
+
 
       <ResponsiveContainer
 
@@ -65,6 +72,8 @@ export default function ResponseChart({
 
       >
 
+
+
         <LineChart
 
           data={data}
@@ -73,9 +82,9 @@ export default function ResponseChart({
 
             top:20,
 
-            right:20,
+            right:10,
 
-            left:0,
+            left:-10,
 
             bottom:10,
 
@@ -83,11 +92,15 @@ export default function ResponseChart({
 
         >
 
+
+
           <CartesianGrid
 
             strokeDasharray="3 3"
 
           />
+
+
 
 
 
@@ -101,7 +114,21 @@ export default function ResponseChart({
 
             }
 
+            tick={{
+
+
+              fontSize:12,
+
+
+            }}
+
+
+            interval="preserveStartEnd"
+
           />
+
+
+
 
 
 
@@ -110,13 +137,31 @@ export default function ResponseChart({
 
             allowDecimals={false}
 
+            tick={{
+
+              fontSize:12,
+
+            }}
+
           />
 
 
 
 
 
-          <Tooltip />
+
+
+          <Tooltip
+
+            contentStyle={{
+
+              borderRadius:"12px",
+
+            }}
+
+          />
+
+
 
 
 
@@ -130,16 +175,30 @@ export default function ResponseChart({
 
             strokeWidth={3}
 
-            dot
+            dot={{
+
+              r:4,
+
+            }}
+
+            activeDot={{
+
+              r:6,
+
+            }}
 
           />
+
+
 
 
 
         </LineChart>
 
 
+
       </ResponsiveContainer>
+
 
 
     </div>
