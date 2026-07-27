@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 
 import { prisma } from "@/lib/prisma";
 
@@ -10,19 +11,21 @@ import {
 
 type PublicFormField = {
 
-  id: string;
+  id:string;
 
-  type: string;
+  type:string;
 
-  label: string;
+  label:string;
 
-  placeholder: string | null;
+  placeholder:string | null;
 
-  required: boolean;
+  required:boolean;
 
-  settings: unknown;
+  settings:unknown;
 
 };
+
+
 
 
 
@@ -34,7 +37,7 @@ export const dynamic = "force-dynamic";
 
 const FormStatus = {
 
-  PUBLISHED: "PUBLISHED",
+  PUBLISHED:"PUBLISHED",
 
 } as const;
 
@@ -44,11 +47,12 @@ const FormStatus = {
 
 
 
+
 type PublicFormPageProps = {
 
-  params: Promise<{
+  params:Promise<{
 
-    slug: string;
+    slug:string;
 
   }>;
 
@@ -61,11 +65,12 @@ type PublicFormPageProps = {
 
 
 
+
 export default async function PublicFormPage({
 
   params,
 
-}: PublicFormPageProps) {
+}:PublicFormPageProps){
 
 
 
@@ -82,11 +87,12 @@ export default async function PublicFormPage({
 
 
 
+
   const form =
 
     await prisma.form.findFirst({
 
-      where: {
+      where:{
 
         slug,
 
@@ -97,15 +103,13 @@ export default async function PublicFormPage({
       },
 
 
-      include: {
+      include:{
 
-        fields: {
+        fields:{
 
-          orderBy: {
+          orderBy:{
 
-            position:
-
-              "asc",
+            position:"asc",
 
           },
 
@@ -122,7 +126,8 @@ export default async function PublicFormPage({
 
 
 
-  if (!form) {
+
+  if(!form){
 
     notFound();
 
@@ -136,22 +141,69 @@ export default async function PublicFormPage({
 
 
 
-  return (
+  const requestHeaders =
 
+    await headers();
+
+
+
+
+
+
+
+
+
+  await prisma.formView.create({
+
+    data:{
+
+      formId:
+
+        form.id,
+
+
+      userAgent:
+
+        requestHeaders.get(
+
+          "user-agent"
+
+        ),
+
+
+
+      referrer:
+
+        requestHeaders.get(
+
+          "referer"
+
+        ),
+
+
+    },
+
+  });
+
+
+
+
+
+
+
+
+
+  return (
 
     <main
 
       className="
         min-h-screen
-
         bg-muted/20
-
         px-4
-
         py-6
 
         sm:px-6
-
         sm:py-10
       "
 
@@ -159,19 +211,17 @@ export default async function PublicFormPage({
 
 
 
-
-
       <div
 
         className="
           mx-auto
-
           w-full
-
           max-w-3xl
         "
 
       >
+
+
 
 
 
@@ -184,11 +234,9 @@ export default async function PublicFormPage({
               form.id,
 
 
-
             title:
 
               form.title,
-
 
 
             description:
@@ -197,13 +245,12 @@ export default async function PublicFormPage({
 
 
 
-
-
             fields:
 
               form.fields.map(
 
-                (field: PublicFormField) => ({
+                (field:PublicFormField)=>({
+
 
 
                   id:
@@ -236,9 +283,8 @@ export default async function PublicFormPage({
 
 
 
-
-
                   settings:
+
 
                     field.settings &&
 
@@ -250,20 +296,19 @@ export default async function PublicFormPage({
 
                       ? field.settings as {
 
-                          options?: string[];
+                          options?:string[];
 
-                          min?: number;
+                          min?:number;
 
-                          max?: number;
+                          max?:number;
 
-                          maxSize?: number;
+                          maxSize?:number;
 
                         }
 
 
 
                       : undefined,
-
 
 
                 })
@@ -277,6 +322,8 @@ export default async function PublicFormPage({
 
 
 
+
+
       </div>
 
 
@@ -284,7 +331,6 @@ export default async function PublicFormPage({
 
 
     </main>
-
 
   );
 

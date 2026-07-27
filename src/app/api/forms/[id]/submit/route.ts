@@ -6,9 +6,9 @@ import { prisma } from "@/lib/prisma";
 
 type SubmitAnswer = {
 
-  fieldId: string;
+  fieldId:string;
 
-  value: unknown;
+  value:unknown;
 
 };
 
@@ -16,9 +16,21 @@ type SubmitAnswer = {
 
 type SubmitBody = {
 
-  answers: SubmitAnswer[];
+  answers:SubmitAnswer[];
 
 };
+
+
+
+
+
+const FormStatus = {
+
+  PUBLISHED:"PUBLISHED",
+
+} as const;
+
+
 
 
 
@@ -28,19 +40,19 @@ type SubmitBody = {
 
 export async function POST(
 
-  request: Request,
+  request:Request,
 
-  context: {
+  context:{
 
-    params: Promise<{
+    params:Promise<{
 
-      id: string;
+      id:string;
 
     }>;
 
   }
 
-) {
+){
 
 
   try {
@@ -48,9 +60,13 @@ export async function POST(
 
     const {
 
-      id: formId,
+      id:formId,
 
     } = await context.params;
+
+
+
+
 
 
 
@@ -65,13 +81,16 @@ export async function POST(
 
 
 
-    if (
+
+
+
+    if(
 
       !body.answers ||
 
       !Array.isArray(body.answers)
 
-    ) {
+    ){
 
 
       return NextResponse.json(
@@ -86,7 +105,7 @@ export async function POST(
 
         {
 
-          status: 400,
+          status:400,
 
         }
 
@@ -100,21 +119,39 @@ export async function POST(
 
 
 
+
+
     const form =
 
-      await prisma.form.findUnique({
+      await prisma.form.findFirst({
 
-        where: {
+        where:{
 
-          id: formId,
+          id:formId,
+
+
+          status:
+
+            FormStatus.PUBLISHED,
 
         },
 
-        select: {
 
-          id: true,
+        include:{
 
-          status: true,
+          fields:{
+
+            select:{
+
+              id:true,
+
+              label:true,
+
+              required:true,
+
+            },
+
+          },
 
         },
 
@@ -126,7 +163,9 @@ export async function POST(
 
 
 
-    if (!form) {
+
+
+    if(!form){
 
 
       return NextResponse.json(
@@ -135,17 +174,149 @@ export async function POST(
 
           error:
 
-            "Form not found",
+            "Form not available",
 
         },
 
         {
 
-          status: 404,
+          status:404,
 
         }
 
       );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    const fieldMap =
+
+      new Map(
+
+        form.fields.map(
+
+          (field)=>
+
+            [
+
+              field.id,
+
+              field,
+
+            ]
+
+        )
+
+      );
+
+
+
+
+
+
+
+
+
+    for(const answer of body.answers){
+
+
+
+      const field =
+
+        fieldMap.get(
+
+          answer.fieldId
+
+        );
+
+
+
+
+
+      if(!field){
+
+
+        return NextResponse.json(
+
+          {
+
+            error:
+
+              "Invalid field",
+
+          },
+
+          {
+
+            status:400,
+
+          }
+
+        );
+
+
+      }
+
+
+
+
+
+
+
+      if(
+
+        field.required &&
+
+        (
+
+          answer.value === undefined ||
+
+          answer.value === null ||
+
+          answer.value === "" ||
+
+          (
+
+            Array.isArray(answer.value) &&
+
+            answer.value.length === 0
+
+          )
+
+        )
+
+      ){
+
+
+
+        return NextResponse.json(
+
+          {
+
+            error:
+
+              `${field.label} is required`,
+
+          },
+
+          {
+
+            status:400,
+
+          }
+
+        );
+
+
+      }
 
 
     }
@@ -162,7 +333,8 @@ export async function POST(
 
       await prisma.formSubmission.create({
 
-        data: {
+        data:{
+
 
 
           formId:
@@ -173,22 +345,26 @@ export async function POST(
 
 
 
-          answers: {
+          answers:{
+
 
 
             create:
 
 
+
               body.answers.map(
 
-                (answer) => ({
+                (answer)=>(
+
+                {
 
 
 
-                  field: {
+                  field:{
 
 
-                    connect: {
+                    connect:{
 
 
                       id:
@@ -223,10 +399,12 @@ export async function POST(
                         ),
 
 
+                }
 
-                })
+              )
 
-              ),
+            ),
+
 
 
           },
@@ -236,10 +414,10 @@ export async function POST(
 
 
 
-        select: {
+        select:{
 
 
-          id: true,
+          id:true,
 
 
         },
@@ -259,8 +437,7 @@ export async function POST(
 
       {
 
-
-        success: true,
+        success:true,
 
 
         submissionId:
@@ -272,12 +449,9 @@ export async function POST(
 
       {
 
-
-        status: 201,
-
+        status:201,
 
       }
-
 
     );
 
@@ -287,9 +461,8 @@ export async function POST(
 
 
 
-  }
+  }catch(error){
 
-  catch(error){
 
 
     console.error(
@@ -308,23 +481,17 @@ export async function POST(
 
       {
 
-
         error:
 
           "Something went wrong",
-
-
 
       },
 
       {
 
-
-        status: 500,
-
+        status:500,
 
       }
-
 
     );
 

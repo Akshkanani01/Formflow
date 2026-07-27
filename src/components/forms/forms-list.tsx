@@ -1,6 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import {
+  useMemo,
+  useState,
+} from "react";
 
 import {
   Archive,
@@ -9,8 +12,23 @@ import {
   X,
 } from "lucide-react";
 
+import {
+  bulkDeleteForms,
+} from "@/app/actions/forms/bulk-delete-forms";
+
+import {
+  bulkPublishForms,
+} from "@/app/actions/forms/bulk-publish-forms";
+
+import {
+  bulkArchiveForms,
+} from "@/app/actions/forms/bulk-archive-forms";
+
+
 import { FormsTable } from "./forms-table";
 import { FormsPagination } from "./forms-pagination";
+
+
 
 
 
@@ -26,6 +44,8 @@ const FormStatus = {
 
 
 
+
+
 type FormStatusType =
   typeof FormStatus[keyof typeof FormStatus];
 
@@ -33,21 +53,22 @@ type FormStatusType =
 
 
 
+
 type FormItem = {
 
-  id: string;
+  id:string;
 
-  title: string;
+  title:string;
 
-  description: string | null;
+  description:string | null;
 
-  status: FormStatusType;
+  status:FormStatusType;
 
-  updatedAt: Date;
+  updatedAt:Date;
 
-  _count: {
+  _count:{
 
-    submissions: number;
+    submissions:number;
 
   };
 
@@ -57,19 +78,23 @@ type FormItem = {
 
 
 
+
+
 type FormsListProps = {
 
-  forms: FormItem[];
+  forms:FormItem[];
 
-  page: number;
+  page:number;
 
-  total: number;
+  total:number;
 
-  totalPages: number;
+  totalPages:number;
 
-  pageSize: number;
+  pageSize:number;
 
 };
+
+
 
 
 
@@ -89,12 +114,13 @@ export function FormsList({
 
   pageSize,
 
-}: FormsListProps) {
+}:FormsListProps){
 
 
 
 
-  const [selectedIds, setSelectedIds] =
+
+  const [selectedIds,setSelectedIds] =
 
     useState<string[]>([]);
 
@@ -102,8 +128,19 @@ export function FormsList({
 
 
 
+  const [loading,setLoading] =
 
-  const allSelected = useMemo(() => {
+    useState(false);
+
+
+
+
+
+
+
+
+
+  const allSelected = useMemo(()=>{
 
 
     return (
@@ -115,7 +152,7 @@ export function FormsList({
     );
 
 
-  }, [
+  },[
 
     forms.length,
 
@@ -130,21 +167,21 @@ export function FormsList({
 
 
 
-  function toggle(id:string) {
+
+
+
+  function toggle(id:string){
 
 
     setSelectedIds((current)=>
 
-
       current.includes(id)
-
 
         ? current.filter(
 
             (item)=>item !== id
 
           )
-
 
         : [
 
@@ -153,7 +190,6 @@ export function FormsList({
             id,
 
           ]
-
 
     );
 
@@ -167,8 +203,8 @@ export function FormsList({
 
 
 
-  function toggleAll() {
 
+  function toggleAll(){
 
 
     if(allSelected){
@@ -203,6 +239,224 @@ export function FormsList({
 
 
 
+
+  async function handlePublish(){
+
+
+    const confirmed =
+
+      window.confirm(
+
+        `Publish ${selectedIds.length} form(s)?`
+
+      );
+
+
+
+
+
+    if(!confirmed){
+
+      return;
+
+    }
+
+
+
+
+
+    try{
+
+
+      setLoading(true);
+
+
+
+
+      await bulkPublishForms({
+
+        formIds:selectedIds,
+
+      });
+
+
+
+
+
+      setSelectedIds([]);
+
+
+
+      window.location.reload();
+
+
+
+    }finally{
+
+
+      setLoading(false);
+
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+
+  async function handleArchive(){
+
+
+    const confirmed =
+
+      window.confirm(
+
+        `Archive ${selectedIds.length} form(s)?`
+
+      );
+
+
+
+
+
+    if(!confirmed){
+
+      return;
+
+    }
+
+
+
+
+
+    try{
+
+
+      setLoading(true);
+
+
+
+
+      await bulkArchiveForms({
+
+        formIds:selectedIds,
+
+      });
+
+
+
+
+
+      setSelectedIds([]);
+
+
+
+      window.location.reload();
+
+
+
+    }finally{
+
+
+      setLoading(false);
+
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  async function handleDelete(){
+
+
+    const confirmed =
+
+      window.confirm(
+
+        `Delete ${selectedIds.length} form(s) permanently?`
+
+      );
+
+
+
+
+
+    if(!confirmed){
+
+      return;
+
+    }
+
+
+
+
+
+    try{
+
+
+      setLoading(true);
+
+
+
+
+      await bulkDeleteForms({
+
+        formIds:selectedIds,
+
+      });
+
+
+
+
+
+      setSelectedIds([]);
+
+
+
+      window.location.reload();
+
+
+
+    }finally{
+
+
+      setLoading(false);
+
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
   return (
 
     <div
@@ -222,8 +476,6 @@ export function FormsList({
 
 
 
-      {/* Bulk Actions */}
-
       {
         selectedIds.length > 0 && (
 
@@ -234,7 +486,6 @@ export function FormsList({
               flex
               flex-col
               gap-4
-
               rounded-2xl
               border
               bg-card
@@ -249,6 +500,7 @@ export function FormsList({
             "
 
           >
+
 
 
 
@@ -284,13 +536,13 @@ export function FormsList({
 
 
 
+
             <div
 
               className="
                 grid
                 grid-cols-2
                 gap-2
-
                 sm:flex
                 sm:flex-wrap
               "
@@ -300,9 +552,16 @@ export function FormsList({
 
 
 
+
+
+
               <button
 
                 type="button"
+
+                disabled={loading}
+
+                onClick={handlePublish}
 
                 className="
                   inline-flex
@@ -316,17 +575,23 @@ export function FormsList({
                   text-sm
                   transition
                   hover:bg-muted
+                  disabled:opacity-50
                 "
 
               >
 
                 <CheckCircle2
+
                   className="h-4 w-4"
+
                 />
 
                 Publish
 
+
               </button>
+
+
 
 
 
@@ -337,6 +602,10 @@ export function FormsList({
               <button
 
                 type="button"
+
+                disabled={loading}
+
+                onClick={handleArchive}
 
                 className="
                   inline-flex
@@ -350,17 +619,23 @@ export function FormsList({
                   text-sm
                   transition
                   hover:bg-muted
+                  disabled:opacity-50
                 "
 
               >
 
                 <Archive
+
                   className="h-4 w-4"
+
                 />
 
                 Archive
 
+
               </button>
+
+
 
 
 
@@ -371,6 +646,10 @@ export function FormsList({
               <button
 
                 type="button"
+
+                disabled={loading}
+
+                onClick={handleDelete}
 
                 className="
                   inline-flex
@@ -386,17 +665,26 @@ export function FormsList({
                   text-destructive
                   transition
                   hover:bg-destructive/10
+                  disabled:opacity-50
                 "
 
               >
 
                 <Trash2
+
                   className="h-4 w-4"
+
                 />
 
-                Delete
+                {
+                  loading
+                    ? "Processing..."
+                    : "Delete"
+                }
+
 
               </button>
+
 
 
 
@@ -409,11 +697,9 @@ export function FormsList({
 
                 type="button"
 
-                onClick={()=>
+                disabled={loading}
 
-                  setSelectedIds([])
-
-                }
+                onClick={()=>setSelectedIds([])}
 
                 className="
                   inline-flex
@@ -427,17 +713,22 @@ export function FormsList({
                   text-sm
                   transition
                   hover:bg-muted
+                  disabled:opacity-50
                 "
 
               >
 
                 <X
+
                   className="h-4 w-4"
+
                 />
 
                 Clear
 
+
               </button>
+
 
 
 
@@ -446,10 +737,12 @@ export function FormsList({
 
 
 
+
           </div>
 
 
         )
+
       }
 
 
@@ -459,8 +752,6 @@ export function FormsList({
 
 
 
-
-      {/* Forms Table */}
 
       <div
 
@@ -507,8 +798,6 @@ export function FormsList({
         pageSize={pageSize}
 
       />
-
-
 
 
 
