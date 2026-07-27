@@ -18,34 +18,87 @@ import {
 } from "./public-field-renderer";
 
 
+
 async function publicSubmit({
+
   formId,
+
   answers,
+
 }: {
+
   formId:string;
 
   answers:{
     fieldId:string;
     value:unknown;
   }[];
+
 }) {
 
-  await fetch(
-    `/api/forms/${formId}/submit`,
-    {
-      method:"POST",
 
-      headers:{
-        "Content-Type":"application/json",
-      },
+  const response =
 
-      body:JSON.stringify({
-        answers,
-      }),
-    }
-  );
+    await fetch(
+
+      `/api/forms/${formId}/submit`,
+
+      {
+
+        method:"POST",
+
+        headers:{
+
+          "Content-Type":
+            "application/json",
+
+        },
+
+
+        body:
+
+          JSON.stringify({
+
+            answers,
+
+          }),
+
+      }
+
+    );
+
+
+
+
+
+  if(!response.ok){
+
+
+    const errorText =
+
+      await response.text();
+
+
+    throw new Error(
+
+      errorText ||
+
+      "Submission failed"
+
+    );
+
+
+  }
+
+
+
+
+
+  return response.json();
 
 }
+
+
 
 
 
@@ -98,13 +151,12 @@ type PublicFormClientProps = {
 
 
 
+
 export function PublicFormClient({
 
   form,
 
 }:PublicFormClientProps){
-
-
 
 
 
@@ -114,11 +166,9 @@ export function PublicFormClient({
 
 
 
-
   const [errors,setErrors] =
 
     useState<Record<string,string>>({});
-
 
 
 
@@ -128,11 +178,15 @@ export function PublicFormClient({
 
 
 
-
   const [success,setSuccess] =
 
     useState(false);
 
+
+
+  const [submitError,setSubmitError] =
+
+    useState("");
 
 
 
@@ -142,9 +196,13 @@ export function PublicFormClient({
 
 
   function updateValue(
+
     fieldId:string,
+
     value:unknown
+
   ){
+
 
     setValues((previous)=>({
 
@@ -164,6 +222,10 @@ export function PublicFormClient({
 
     }));
 
+
+
+    setSubmitError("");
+
   }
 
 
@@ -178,7 +240,9 @@ export function PublicFormClient({
 
 
     const validationErrors:
+
       Record<string,string> = {};
+
 
 
 
@@ -187,7 +251,9 @@ export function PublicFormClient({
 
 
       const value =
+
         values[field.id];
+
 
 
 
@@ -205,20 +271,27 @@ export function PublicFormClient({
           value === null ||
 
           (
+
             Array.isArray(value) &&
+
             value.length === 0
+
           )
 
         )
 
       ){
 
+
         validationErrors[field.id] =
+
           `${field.label} is required`;
+
 
         return;
 
       }
+
 
 
 
@@ -233,25 +306,36 @@ export function PublicFormClient({
 
       ){
 
+
         const email =
+
           String(value);
 
 
 
+
         if(
+
           !/^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
           .test(email)
+
         ){
 
           validationErrors[field.id] =
+
             "Enter a valid email address";
 
         }
 
+
       }
 
 
+
     });
+
+
 
 
 
@@ -263,8 +347,12 @@ export function PublicFormClient({
 
 
 
+
+
     return (
+
       Object.keys(validationErrors).length === 0
+
     );
 
 
@@ -278,11 +366,17 @@ export function PublicFormClient({
 
 
 
+
+
+
   async function submit(){
 
 
+
     const valid =
+
       validateForm();
+
 
 
 
@@ -297,39 +391,64 @@ export function PublicFormClient({
 
 
 
+
+
     try{
+
 
 
       setLoading(true);
 
 
+      setSubmitError("");
+
+
+
+
+
+
 
       await publicSubmit({
 
+
         formId:
+
           form.id,
+
 
 
         answers:
 
           form.fields.map(
 
-            (field)=>({
-
-              fieldId:
-                field.id,
+            (field)=>(
 
 
-              value:
-                values[field.id] ?? "",
+              {
+
+                fieldId:
+
+                  field.id,
 
 
-            })
+                value:
+
+                  values[field.id] ?? "",
+
+
+              }
+
+
+            )
 
           ),
 
 
+
       });
+
+
+
 
 
 
@@ -337,13 +456,41 @@ export function PublicFormClient({
 
 
 
-    } finally {
+
+    }
+
+    catch(error){
+
+
+
+      console.error(
+
+        "FORM SUBMIT ERROR:",
+
+        error
+
+      );
+
+
+
+      setSubmitError(
+
+        "Unable to submit response. Please try again."
+
+      );
+
+
+
+    }
+
+    finally{
 
 
       setLoading(false);
 
 
     }
+
 
 
   }
@@ -358,14 +505,16 @@ export function PublicFormClient({
 
   function resetForm(){
 
+
     setValues({});
 
     setErrors({});
 
     setSuccess(false);
 
-  }
+    setSubmitError("");
 
+  }
 
 
 
@@ -393,25 +542,17 @@ export function PublicFormClient({
 
       >
 
-
         <div
 
           className="
             w-full
             max-w-xl
-
             rounded-2xl
-
             border
-
             bg-background
-
             p-6
-
             text-center
-
             shadow-xl
-
             sm:rounded-3xl
             sm:p-10
           "
@@ -430,9 +571,6 @@ export function PublicFormClient({
               justify-center
               rounded-full
               bg-emerald-100
-
-              sm:h-16
-              sm:w-16
             "
 
           >
@@ -443,9 +581,6 @@ export function PublicFormClient({
                 h-7
                 w-7
                 text-emerald-600
-
-                sm:h-8
-                sm:w-8
               "
 
             />
@@ -462,7 +597,6 @@ export function PublicFormClient({
               mt-5
               text-2xl
               font-bold
-
               sm:text-3xl
             "
 
@@ -476,15 +610,12 @@ export function PublicFormClient({
 
 
 
-
           <p
 
             className="
               mt-3
               text-sm
               text-muted-foreground
-
-              sm:text-base
             "
 
           >
@@ -492,8 +623,6 @@ export function PublicFormClient({
             Your response has been submitted successfully.
 
           </p>
-
-
 
 
 
@@ -507,7 +636,6 @@ export function PublicFormClient({
               mt-7
               w-full
               rounded-xl
-
               sm:w-auto
             "
 
@@ -529,8 +657,6 @@ export function PublicFormClient({
 
 
           </Button>
-
-
 
 
         </div>
@@ -563,7 +689,6 @@ export function PublicFormClient({
     >
 
 
-
       <div
 
         className="
@@ -572,7 +697,6 @@ export function PublicFormClient({
           bg-background
           p-5
           shadow-xl
-
           sm:rounded-3xl
           sm:p-8
         "
@@ -580,20 +704,14 @@ export function PublicFormClient({
       >
 
 
-
-
-
         <div
 
           className="
             border-b
             pb-5
-
-            sm:pb-6
           "
 
         >
-
 
 
           <h1
@@ -602,7 +720,6 @@ export function PublicFormClient({
               break-words
               text-2xl
               font-bold
-
               sm:text-3xl
             "
 
@@ -616,8 +733,8 @@ export function PublicFormClient({
 
 
 
-
           {
+
             form.description && (
 
               <p
@@ -626,8 +743,6 @@ export function PublicFormClient({
                   mt-3
                   text-sm
                   text-muted-foreground
-
-                  sm:text-base
                 "
 
               >
@@ -637,14 +752,11 @@ export function PublicFormClient({
               </p>
 
             )
+
           }
 
 
-
-
-
         </div>
-
 
 
 
@@ -658,16 +770,13 @@ export function PublicFormClient({
           className="
             mt-6
             space-y-6
-
-            sm:mt-8
-            sm:space-y-7
           "
 
         >
 
 
-
           {
+
             form.fields.map(
 
               (field)=>(
@@ -684,7 +793,6 @@ export function PublicFormClient({
                 >
 
 
-
                   <label
 
                     className="
@@ -698,6 +806,7 @@ export function PublicFormClient({
 
 
                     {
+
                       field.required && (
 
                         <span
@@ -714,12 +823,11 @@ export function PublicFormClient({
                         </span>
 
                       )
+
                     }
 
 
                   </label>
-
-
 
 
 
@@ -755,9 +863,8 @@ export function PublicFormClient({
 
 
 
-
-
                   {
+
                     errors[field.id] && (
 
                       <p
@@ -774,9 +881,8 @@ export function PublicFormClient({
                       </p>
 
                     )
+
                   }
-
-
 
 
 
@@ -786,13 +892,43 @@ export function PublicFormClient({
               )
 
             )
-          }
 
+          }
 
 
         </div>
 
 
+
+
+
+
+
+
+        {
+
+          submitError && (
+
+            <p
+
+              className="
+                mt-5
+                rounded-lg
+                bg-destructive/10
+                p-3
+                text-sm
+                text-destructive
+              "
+
+            >
+
+              {submitError}
+
+            </p>
+
+          )
+
+        }
 
 
 
@@ -806,13 +942,9 @@ export function PublicFormClient({
             mt-8
             border-t
             pt-5
-
-            sm:mt-10
-            sm:pt-6
           "
 
         >
-
 
 
           <Button
@@ -821,8 +953,6 @@ export function PublicFormClient({
               h-12
               w-full
               rounded-xl
-              text-sm
-              font-semibold
             "
 
             disabled={loading}
@@ -832,21 +962,20 @@ export function PublicFormClient({
           >
 
             {
+
               loading
 
                 ? "Submitting..."
 
                 : "Submit Response"
+
             }
 
 
           </Button>
 
 
-
-
         </div>
-
 
 
 
