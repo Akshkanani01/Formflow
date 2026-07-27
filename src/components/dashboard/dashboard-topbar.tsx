@@ -1,42 +1,34 @@
 "use client";
 
-
 import {
   useState,
   useTransition,
 } from "react";
 
-
 import {
   ChevronDown,
   LogOut,
+  Menu,
 } from "lucide-react";
-
 
 import {
   authClient,
 } from "@/lib/auth-client";
 
-
 import GlobalSearch from "@/components/dashboard/global-search";
-
-
-
 
 
 type DashboardTopbarProps = {
 
   user: {
 
-    email:string;
+    email: string;
 
   };
 
+  onMenuClick?: () => void;
+
 };
-
-
-
-
 
 
 
@@ -44,27 +36,21 @@ export default function DashboardTopbar({
 
   user,
 
-}:DashboardTopbarProps){
+  onMenuClick,
+
+}: DashboardTopbarProps) {
 
 
-
-  const [open,setOpen] =
-
+  const [open, setOpen] =
     useState(false);
 
 
-
-  const [pending,startTransition] =
-
+  const [pending, startTransition] =
     useTransition();
 
 
 
-
-
-
-
-  function handleLogout(){
+  function handleLogout() {
 
 
     startTransition(async()=>{
@@ -72,7 +58,7 @@ export default function DashboardTopbar({
 
       await authClient.signOut({
 
-        fetchOptions:{
+        fetchOptions: {
 
           onSuccess:()=>{
 
@@ -94,8 +80,6 @@ export default function DashboardTopbar({
 
 
 
-
-
   return (
 
     <header
@@ -104,41 +88,84 @@ export default function DashboardTopbar({
         sticky
         top-0
         z-40
-        rounded-[32px]
+        rounded-2xl
+        sm:rounded-[32px]
         border
         border-border
         bg-card/80
-        px-8
-        py-5
+        px-4
+        py-4
+        sm:px-8
+        sm:py-5
         backdrop-blur-xl
       "
 
     >
 
 
-
       <div
 
         className="
           flex
-          flex-col
-          gap-5
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
+          items-center
+          justify-between
+          gap-4
         "
 
       >
 
 
 
+        {/* Mobile Menu Button */}
+
+        <button
+
+          onClick={onMenuClick}
+
+          className="
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
+            rounded-xl
+            border
+            border-border
+            bg-background
+            lg:hidden
+          "
+
+        >
+
+          <Menu
+
+            className="
+              h-5
+              w-5
+            "
+
+          />
+
+        </button>
 
 
-        {/* Global Search */}
-
-        <GlobalSearch />
 
 
+
+        {/* Search */}
+
+        <div
+
+          className="
+            flex-1
+            min-w-0
+          "
+
+        >
+
+          <GlobalSearch />
+
+        </div>
 
 
 
@@ -158,35 +185,31 @@ export default function DashboardTopbar({
           <button
 
             onClick={()=>setOpen(
-
               (value)=>!value
-
             )}
 
             className="
               flex
               items-center
-              gap-3
+              gap-2
               rounded-2xl
               border
               border-border
               bg-background
-              px-3
+              px-2
               py-2
-              transition-colors
-              hover:bg-accent
+              sm:px-3
             "
 
           >
-
 
 
             <div
 
               className="
                 flex
-                h-11
-                w-11
+                h-10
+                w-10
                 items-center
                 justify-center
                 rounded-full
@@ -233,7 +256,6 @@ export default function DashboardTopbar({
 
                 {user.email}
 
-
               </p>
 
 
@@ -246,16 +268,17 @@ export default function DashboardTopbar({
             <ChevronDown
 
               className="
+                hidden
                 h-4
                 w-4
                 text-muted-foreground
+                sm:block
               "
 
             />
 
 
           </button>
-
 
 
 
@@ -284,7 +307,6 @@ export default function DashboardTopbar({
               >
 
 
-
                 <div
 
                   className="
@@ -311,7 +333,6 @@ export default function DashboardTopbar({
 
 
                 </div>
-
 
 
 
@@ -373,17 +394,13 @@ export default function DashboardTopbar({
                 </div>
 
 
-
               </div>
 
             )
           }
 
 
-
-
         </div>
-
 
 
 
