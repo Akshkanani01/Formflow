@@ -9,6 +9,8 @@ import {
   Undo2,
   Redo2,
   CheckCircle2,
+  Menu,
+  Settings2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -31,11 +33,14 @@ export function BuilderHeader({
 }: BuilderHeaderProps) {
 
 
+
   const {
     undo,
     redo,
     canUndo,
     canRedo,
+    openSidebar,
+    openProperties,
   } = useBuilder();
 
 
@@ -52,7 +57,7 @@ export function BuilderHeader({
         shrink-0
         items-center
         justify-between
-        gap-3
+        gap-2
         border-b
         bg-background
         px-3
@@ -60,6 +65,7 @@ export function BuilderHeader({
       "
 
     >
+
 
 
 
@@ -71,10 +77,47 @@ export function BuilderHeader({
           flex
           min-w-0
           items-center
-          gap-3
+          gap-2
+          sm:gap-3
         "
 
       >
+
+
+
+
+        {/* Mobile Sidebar */}
+
+        <Button
+
+          type="button"
+
+          variant="ghost"
+
+          size="icon"
+
+          className="
+            lg:hidden
+          "
+
+          onClick={openSidebar}
+
+        >
+
+          <Menu
+            className="
+              h-5
+              w-5
+            "
+          />
+
+        </Button>
+
+
+
+
+
+
 
         <Link
 
@@ -94,7 +137,12 @@ export function BuilderHeader({
         >
 
           <ArrowLeft
-            className="h-4 w-4"
+
+            className="
+              h-4
+              w-4
+            "
+
           />
 
         </Link>
@@ -103,16 +151,19 @@ export function BuilderHeader({
 
 
 
+
         <div
+
           className="
             min-w-0
           "
+
         >
 
           <h1
 
             className="
-              max-w-[160px]
+              max-w-[140px]
               truncate
               text-sm
               font-semibold
@@ -124,6 +175,8 @@ export function BuilderHeader({
             {title}
 
           </h1>
+
+
 
 
 
@@ -152,13 +205,16 @@ export function BuilderHeader({
 
             Saved
 
+
           </div>
+
 
 
         </div>
 
 
       </div>
+
 
 
 
@@ -181,6 +237,43 @@ export function BuilderHeader({
       >
 
 
+
+
+        {/* Mobile Properties */}
+
+        <Button
+
+          type="button"
+
+          variant="ghost"
+
+          size="icon"
+
+          className="
+            lg:hidden
+          "
+
+          onClick={openProperties}
+
+        >
+
+          <Settings2
+
+            className="
+              h-5
+              w-5
+            "
+
+          />
+
+        </Button>
+
+
+
+
+
+
+
         <Button
 
           type="button"
@@ -196,10 +289,17 @@ export function BuilderHeader({
         >
 
           <Undo2
-            className="h-4 w-4"
+
+            className="
+              h-4
+              w-4
+            "
+
           />
 
         </Button>
+
+
 
 
 
@@ -220,10 +320,16 @@ export function BuilderHeader({
         >
 
           <Redo2
-            className="h-4 w-4"
+
+            className="
+              h-4
+              w-4
+            "
+
           />
 
         </Button>
+
 
 
 
@@ -257,13 +363,18 @@ export function BuilderHeader({
 
             />
 
+
             <span
+
               className="
                 hidden
                 sm:inline
               "
+
             >
+
               Preview
+
             </span>
 
 
@@ -271,6 +382,7 @@ export function BuilderHeader({
 
 
         </Link>
+
 
 
 
@@ -296,13 +408,18 @@ export function BuilderHeader({
 
           />
 
+
           <span
+
             className="
               hidden
               sm:inline
             "
+
           >
+
             Publish
+
           </span>
 
 
@@ -313,6 +430,8 @@ export function BuilderHeader({
 
 
       </div>
+
+
 
 
     </header>
